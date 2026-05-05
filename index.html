@@ -75,6 +75,10 @@
         /* Glassmorphism utility */
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
         .dark .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
+
+        /* Loader */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-darker dark:text-slate-100 min-h-screen antialiased selection:bg-primary selection:text-white overflow-hidden">
@@ -83,59 +87,71 @@
     <div id="toast-container"></div>
 
     <!-- App Container -->
-    <div id="app" class="w-full h-screen overflow-hidden flex"></div>
+    <div id="app" class="w-full h-screen overflow-hidden flex">
+        <div class="w-full h-full flex items-center justify-center">
+            <div class="loader"></div>
+        </div>
+    </div>
 
-    <script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         // ==========================================
-        // 1. DATA & STATE MANAGEMENT (WITH LOCALSTORAGE)
+        // 1. FIREBASE CONFIGURATION
         // ==========================================
-        const DEFAULT_STATE = {
-            loggedInUser: null, 
-            admin: [{ id: 1, username: 'admin', password: '123', nama: 'Bapak Kost' }],
-            penghuni: [
-                { id: 1, username: 'rama', password: '123', no_hp: '08123456789', nama: 'Rama Wijaya', tgl_masuk: '2026-01-10' },
-                { id: 2, username: 'budi', password: '123', no_hp: '08567890123', nama: 'Budi Santoso', tgl_masuk: '2026-03-15' }
-            ],
-            kamar: [
-                { id: 101, fasilitas: 'Kasur, Lemari, AC, Wi-Fi', lantai: 1, ukuran: 4, harga: 800000, status: 'Terisi' },
-                { id: 102, fasilitas: 'Kasur, Lemari, Kipas, Jendela Luar', lantai: 1, ukuran: 3, harga: 550000, status: 'Terisi' },
-                { id: 201, fasilitas: 'Kasur, Meja Belajar, AC, Kamar Mandi Dalam', lantai: 2, ukuran: 5, harga: 1200000, status: 'Tersedia' },
-                { id: 202, fasilitas: 'Kasur, Lemari, Kipas', lantai: 2, ukuran: 3, harga: 450000, status: 'Tersedia' }
-            ],
-            sewa: [
-                { id: 1, id_penghuni: 1, id_kamar: 101 },
-                { id: 2, id_penghuni: 2, id_kamar: 102 }
-            ],
-            tagihan: [
-                { id: 1, id_penghuni: 1, id_kamar: 101, nominal: 800000, status_bayar: 'Belum Lunas', metode: null, tanggal: new Date().toISOString().split('T')[0] },
-                { id: 2, id_penghuni: 2, id_kamar: 102, nominal: 550000, status_bayar: 'Lunas', metode: 'Transfer BCA', tanggal: '2026-04-01' }
-            ],
-            komplain: [
-                { id: 1, id_penghuni: 2, isi: 'Air di kamar mandi lantai 1 mampet pak.', status: 'Pending', tanggal: 'Baru saja' }
-            ],
-            pengumuman: [
-                { id: 1, judul: 'Pembersihan AC Rutin', isi: 'Halo semuanya, besok pagi jam 09.00 akan ada tukang AC yang datang. Mohon kerjasamanya ya.', tanggal: 'Hari ini', tipe: 'info' }
-            ]
+        // RAMA: GANTI BAGIAN INI DENGAN firebaseConfig DARI CONSOLE FIREBASE-MU!
+        // Jika kode ini dijalankan di Immersive, kita akan mencoba menggunakan konfigurasi global jika tersedia.
+        let firebaseConfig = null;
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+            try {
+                firebaseConfig = JSON.parse(__firebase_config);
+            } catch(e) { console.error("Error parsing __firebase_config"); }
+        }
+
+        if (!firebaseConfig) {
+             firebaseConfig = {
+                apiKey: "AIzaSyBM-y6dUxLLgF1z41k-vGKjclJeM7QkO3s",
+                authDomain: "webkost-5a25e.firebaseapp.com",
+                projectId: "webkost-5a25e",
+                storageBucket: "webkost-5a25e.firebasestorage.app",
+                messagingSenderId: "316395682089",
+                appId: "1:316395682089:web:2286a38e4b2f843a055f38",
+                measurementId: "G-4GFHKK1TN5"
+            };
+        }
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Setup App ID berdasarkan environment atau fallback
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kost-Rama-app';
+
+        // ==========================================
+        // 2. STATE MANAGEMENT (FIRESTORE BASED)
+        // ==========================================
+        let state = {
+            loggedInUser: null, // {id, username, role, nama}
+            admin: [],
+            penghuni: [],
+            kamar: [],
+            sewa: [],
+            tagihan: [],
+            komplain: [],
+            pengumuman: [],
+            isDataLoaded: false
         };
 
-        let state = JSON.parse(JSON.stringify(DEFAULT_STATE)); 
-        let currentTab = 'overview'; // Default tab untuk sidebar
-
-        function loadData() {
-            const saved = localStorage.getItem('kost_Rama_data_v2');
-            if (saved) {
-                try { state = JSON.parse(saved); } catch (e) { console.error("Gagal membaca storage", e); }
-            }
-        }
-
-        function saveData() {
-            localStorage.setItem('kost_Rama_data_v2', JSON.stringify(state));
-        }
+        let currentTab = 'overview';
+        let unsubscribeListeners = [];
 
         // ==========================================
-        // 2. UTILITY FUNCTIONS
+        // 3. UTILITY FUNCTIONS
         // ==========================================
-        function showToast(message, type = 'success') {
+        window.showToast = (message, type = 'success') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -147,48 +163,147 @@
             toast.innerHTML = `${icon} <span class="tracking-wide text-sm">${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => { toast.remove(); }, 4000);
-        }
+        };
 
-        function initTheme() {
+        window.initTheme = () => {
             const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
             if (isDark) document.documentElement.classList.add('dark');
             else document.documentElement.classList.remove('dark');
-        }
+        };
 
-        function toggleTheme() {
+        window.toggleTheme = () => {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            render(); // Re-render to update icons if necessary
-        }
+            render(); 
+        };
 
-        function formatRupiah(angka) {
+        window.formatRupiah = (angka) => {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-        }
+        };
 
-        function getAssignedRoom(userId) {
-            const userSewa = state.sewa.slice().reverse().find(s => s.id_penghuni === userId);
+        window.getAssignedRoom = (userId) => {
+            // Urutkan sewa berdasarkan ID terbaru
+            const sortedSewa = [...state.sewa].sort((a, b) => b.id - a.id);
+            const userSewa = sortedSewa.find(s => s.id_penghuni === userId);
             return userSewa ? userSewa.id_kamar : '-';
-        }
+        };
 
         // ==========================================
-        // 3. MAIN RENDERER
+        // 4. FIREBASE INITIALIZATION & SYNC
+        // ==========================================
+        
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+                document.getElementById('app').innerHTML = `<div class="p-6 text-center text-red-500">Gagal terhubung ke autentikasi: ${error.message}</div>`;
+            }
+        }
+
+        // Helper untuk membuat path referensi koleksi publik (Semua data kost bersifat publik agar admin/penghuni bisa saling lihat)
+        const getColRef = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
+        const getDocRef = (colName, docId) => doc(db, 'artifacts', appId, 'public', 'data', colName, String(docId));
+
+        async function seedInitialDataIfNeeded() {
+            // Cek apakah data admin sudah ada. Jika belum, buat data awal.
+            const adminSnap = await getDocs(getColRef('admin'));
+            if (adminSnap.empty) {
+                console.log("Seeding initial data...");
+                await setDoc(getDocRef('admin', 1), { id: 1, username: 'admin', password: '123', nama: 'Bapak Kost' });
+                
+                await setDoc(getDocRef('kamar', 101), { id: 101, fasilitas: 'Kasur, Lemari, AC, Wi-Fi', lantai: 1, ukuran: 4, harga: 800000, status: 'Terisi' });
+                await setDoc(getDocRef('kamar', 102), { id: 102, fasilitas: 'Kasur, Lemari, Kipas, Jendela Luar', lantai: 1, ukuran: 3, harga: 550000, status: 'Terisi' });
+                await setDoc(getDocRef('kamar', 201), { id: 201, fasilitas: 'Kasur, Meja Belajar, AC, Kamar Mandi Dalam', lantai: 2, ukuran: 5, harga: 1200000, status: 'Tersedia' });
+                await setDoc(getDocRef('kamar', 202), { id: 202, fasilitas: 'Kasur, Lemari, Kipas', lantai: 2, ukuran: 3, harga: 450000, status: 'Tersedia' });
+                
+                await setDoc(getDocRef('penghuni', 1), { id: 1, username: 'rama', password: '123', no_hp: '08123456789', nama: 'Rama Wijaya', tgl_masuk: '2026-01-10' });
+                await setDoc(getDocRef('penghuni', 2), { id: 2, username: 'budi', password: '123', no_hp: '08567890123', nama: 'Budi Santoso', tgl_masuk: '2026-03-15' });
+                
+                await setDoc(getDocRef('sewa', 1), { id: 1, id_penghuni: 1, id_kamar: 101 });
+                await setDoc(getDocRef('sewa', 2), { id: 2, id_penghuni: 2, id_kamar: 102 });
+                
+                await setDoc(getDocRef('tagihan', 1), { id: 1, id_penghuni: 1, id_kamar: 101, nominal: 800000, status_bayar: 'Belum Lunas', metode: null, tanggal: new Date().toISOString().split('T')[0] });
+                await setDoc(getDocRef('tagihan', 2), { id: 2, id_penghuni: 2, id_kamar: 102, nominal: 550000, status_bayar: 'Lunas', metode: 'Transfer BCA', tanggal: '2026-04-01' });
+                
+                await setDoc(getDocRef('komplain', 1), { id: 1, id_penghuni: 2, isi: 'Air di kamar mandi lantai 1 mampet pak.', status: 'Pending', tanggal: 'Baru saja' });
+                
+                await setDoc(getDocRef('pengumuman', 1), { id: 1, judul: 'Pembersihan AC Rutin', isi: 'Halo semuanya, besok pagi jam 09.00 akan ada tukang AC yang datang. Mohon kerjasamanya ya.', tanggal: 'Hari ini', tipe: 'info' });
+                console.log("Seeding done.");
+            }
+        }
+
+        function setupListeners() {
+            // Bersihkan listener lama jika ada
+            unsubscribeListeners.forEach(unsub => unsubscribe());
+            unsubscribeListeners = [];
+
+            const collectionsToSync = ['admin', 'penghuni', 'kamar', 'sewa', 'tagihan', 'komplain', 'pengumuman'];
+            
+            // Variabel untuk mengecek apakah load pertama dari semua listener sudah selesai
+            let loadedCount = 0;
+            
+            collectionsToSync.forEach(colName => {
+                const unsub = onSnapshot(getColRef(colName), (snapshot) => {
+                    const data = [];
+                    snapshot.forEach(doc => data.push(doc.data()));
+                    state[colName] = data;
+                    
+                    if (!state.isDataLoaded) {
+                        loadedCount++;
+                        if (loadedCount === collectionsToSync.length) {
+                            state.isDataLoaded = true;
+                            render();
+                        }
+                    } else {
+                        // Jika sudah loaded dan ada perubahan, render ulang UI
+                        render();
+                    }
+                }, (error) => {
+                    console.error(`Error listening to ${colName}:`, error);
+                    showToast(`Error sinkronisasi data ${colName}`, 'error');
+                });
+                unsubscribeListeners.push(unsub);
+            });
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Jangan mulai sinkronisasi jika config kosong (mencegah error permissions)
+                if (firebaseConfig.apiKey === "") {
+                    document.getElementById('app').innerHTML = `<div class="p-8 text-center"><h2 class="text-xl font-bold text-red-500 mb-2">Setup Required</h2><p>Please update <code>firebaseConfig</code> with your actual Firebase project settings.</p></div>`;
+                    return;
+                }
+                
+                await seedInitialDataIfNeeded();
+                setupListeners();
+            }
+        });
+
+
+        // ==========================================
+        // 5. MAIN RENDERER
         // ==========================================
         function render() {
-            saveData(); 
+            if (!state.isDataLoaded) return; // Tunggu data Firebase siap
+
             const app = document.getElementById('app');
             app.innerHTML = ''; 
 
             if (!state.loggedInUser) {
                 app.appendChild(LoginView());
             } else {
-                // Main Layout with Sidebar
                 app.appendChild(MainLayout());
             }
         }
 
         // ==========================================
-        // 4. VIEWS (COMPONENTS)
+        // 6. VIEWS (COMPONENTS)
         // ==========================================
 
         // --- LOGIN VIEW ---
@@ -196,7 +311,6 @@
             const div = document.createElement('div');
             div.className = 'w-full h-full flex items-center justify-center p-6 fade-in relative overflow-hidden';
             
-            // Abstract Background elements
             div.innerHTML = `
                 <div class="absolute inset-0 bg-slate-50 dark:bg-darker z-0">
                     <div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten animate-pulse" style="animation-duration: 4s;"></div>
@@ -246,11 +360,6 @@
                         </button>
                     </form>
                 </div>
-                
-                <!-- Theme Toggle on Login -->
-                <button onclick="toggleTheme()" class="absolute top-6 right-6 p-3 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full shadow-lg z-50 ring-1 ring-slate-200/50 dark:ring-slate-700/50 hover:scale-110 transition">
-                    <i id="themeIconLogin" class="${document.documentElement.classList.contains('dark') ? 'ph-fill ph-sun text-yellow-400' : 'ph-fill ph-moon text-slate-700'} text-xl"></i>
-                </button>
             `;
 
             // Logic Show/Hide Password
@@ -281,7 +390,7 @@
 
                 if (userFound) {
                     state.loggedInUser = { id: userFound.id, username: userFound.username, role: r, nama: userFound.nama || userFound.username };
-                    currentTab = 'overview'; // Reset tab on login
+                    currentTab = 'overview'; 
                     showToast(`Selamat datang kembali, ${state.loggedInUser.nama}!`, 'success');
                     render();
                 } else {
@@ -299,7 +408,6 @@
 
             const isAdmin = state.loggedInUser.role === 'Admin';
             
-            // Definisikan Menu Navigasi
             const menus = isAdmin ? [
                 { id: 'overview', icon: 'ph-squares-four', label: 'Overview' },
                 { id: 'kamar', icon: 'ph-door', label: 'Kamar Kost' },
@@ -313,7 +421,6 @@
                 { id: 'komplain', icon: 'ph-headset', label: 'Pusat Bantuan' },
             ];
 
-            // 1. Sidebar HTML
             let sidebarMenus = menus.map(m => `
                 <button onclick="changeTab('${m.id}')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-1.5 transition-all ${currentTab === m.id ? 'bg-primary text-white font-semibold shadow-md shadow-primary/20' : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-white font-medium'}">
                     <i class="${currentTab === m.id ? 'ph-fill' : 'ph'} ${m.icon} text-xl"></i>
@@ -344,17 +451,15 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400 truncate">${state.loggedInUser.role}</p>
                         </div>
                     </div>
-                    <button onclick="doLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border border-rose-100 dark:border-red-500/20 rounded-xl font-bold hover:bg-red-500 hover:text-white transition-colors">
+                    <button onclick="doLogout()" class="btn-animate w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border border-rose-100 dark:border-red-500/20 rounded-xl font-bold hover:bg-red-500 hover:text-white transition-colors">
                         <i class="ph-bold ph-sign-out"></i> Keluar
                     </button>
                 </div>
             `;
 
-            // 2. Main Area
             const mainArea = document.createElement('main');
             mainArea.className = 'flex-1 flex flex-col relative overflow-hidden bg-slate-50/50 dark:bg-darker';
             
-            // Topbar (Mobile Menu Toggle & Theme Toggle)
             const isDark = document.documentElement.classList.contains('dark');
             const topbar = `
                 <header class="h-20 glass flex items-center justify-between px-6 z-10">
@@ -365,17 +470,15 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400">${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                         </div>
                     </div>
-                    <button onclick="toggleTheme()" class="p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <button onclick="toggleTheme()" class="btn-animate p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                         <i id="themeIconMain" class="${isDark ? 'ph-fill ph-sun text-yellow-400' : 'ph-fill ph-moon text-slate-700'} text-xl"></i>
                     </button>
                 </header>
             `;
 
-            // Content Area Wrapper
             const contentWrapper = document.createElement('div');
             contentWrapper.className = 'flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar fade-in relative';
             
-            // Render specific content based on role & tab
             let contentEl = null;
             if(isAdmin) {
                 if(currentTab === 'overview') contentEl = renderAdminOverview();
@@ -412,7 +515,7 @@
         }
 
         // ==========================================
-        // ADMIN COMPONENTS
+        // FIREBASE DB ACTIONS (ADMIN)
         // ==========================================
         
         function renderAdminOverview() {
@@ -421,13 +524,12 @@
             const kamarTerisi = state.kamar.filter(k => k.status === 'Terisi').length;
             const persentase = totalKamar === 0 ? 0 : Math.round((kamarTerisi / totalKamar) * 100);
             
-            // Hitung estimasi pendapatan bulan ini (dari tagihan lunas)
             const pendapatan = state.tagihan.filter(t => t.status_bayar === 'Lunas').reduce((sum, t) => sum + t.nominal, 0);
             const komplainPending = state.komplain.filter(k => k.status === 'Pending').length;
 
             div.innerHTML = `
                 <div class="mb-8 fade-in delay-100">
-                    <h3 class="text-2xl font-bold dark:text-white mb-2">Selamat Datang, Bapak Kost! 👋</h3>
+                    <h3 class="text-2xl font-bold dark:text-white mb-2">Selamat Datang, ${state.loggedInUser.nama}! 👋</h3>
                     <p class="text-slate-500 dark:text-slate-400">Berikut adalah ringkasan performa kost hari ini.</p>
                 </div>
 
@@ -474,28 +576,7 @@
                             <h4 class="text-3xl font-extrabold mb-1">${komplainPending}</h4>
                             <p class="text-sm text-red-100">Komplain belum diselesaikan</p>
                         </div>
-                        <button onclick="changeTab('komplain')" class="mt-4 w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl text-sm font-bold transition">Cek Sekarang</button>
-                    </div>
-                </div>
-
-                <!-- Section Bawah: Log Aktivitas -->
-                <div class="bg-white dark:bg-surface rounded-2xl border border-slate-100 dark:border-slate-800 p-6 fade-in delay-300">
-                    <h4 class="font-bold text-lg dark:text-white mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">Aktivitas Terbaru</h4>
-                    <div class="space-y-4">
-                        <div class="flex gap-4">
-                            <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/10 text-primary flex items-center justify-center shrink-0"><i class="ph-fill ph-user-plus text-xl"></i></div>
-                            <div>
-                                <p class="text-sm dark:text-slate-200"><span class="font-bold">Budi Santoso</span> baru saja didaftarkan ke Kamar 102.</p>
-                                <p class="text-xs text-slate-400 mt-0.5">2 hari yang lalu</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="w-10 h-10 rounded-full bg-green-50 dark:bg-green-500/10 text-secondary flex items-center justify-center shrink-0"><i class="ph-fill ph-receipt text-xl"></i></div>
-                            <div>
-                                <p class="text-sm dark:text-slate-200">Tagihan <span class="font-bold">#INV-2</span> telah lunas via Transfer BCA.</p>
-                                <p class="text-xs text-slate-400 mt-0.5">1 minggu yang lalu</p>
-                            </div>
-                        </div>
+                        <button onclick="changeTab('komplain')" class="btn-animate mt-4 w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl text-sm font-bold transition">Cek Sekarang</button>
                     </div>
                 </div>
             `;
@@ -505,15 +586,16 @@
         function renderAdminKamar() {
             const div = document.createElement('div');
             
-            // Grid Layout untuk Kamar (FITUR 10X LEBIH BAGUS)
             let kamarCards = '';
-            state.kamar.forEach((k, index) => {
+            // Sorting kamar berdasarkan ID untuk kerapian
+            const sortedKamar = [...state.kamar].sort((a, b) => a.id - b.id);
+
+            sortedKamar.forEach((k, index) => {
                 const isTerisi = k.status === 'Terisi';
                 const statusColor = isTerisi ? 'bg-rose-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
                 const statusIcon = isTerisi ? 'ph-prohibit' : 'ph-check-circle';
                 
-                // Parse fasilitas untuk badge
-                const fasArray = k.fasilitas.split(',').map(f => f.trim()).slice(0, 3); // Ambil 3 pertama
+                const fasArray = k.fasilitas.split(',').map(f => f.trim()).slice(0, 3);
                 let fasBadges = fasArray.map(f => `<span class="px-2 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs rounded-md whitespace-nowrap">${f}</span>`).join('');
                 if(k.fasilitas.split(',').length > 3) fasBadges += `<span class="px-2 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs rounded-md">+ lain</span>`;
 
@@ -540,8 +622,8 @@
                         <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
                             <p class="font-bold text-primary dark:text-indigo-400">${formatRupiah(k.harga)}<span class="text-xs text-slate-400 font-normal">/bln</span></p>
                             <div class="flex gap-1.5">
-                                <button onclick="ubahStatusKamar(${k.id})" class="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg transition" title="Ubah Status"><i class="ph-bold ph-arrows-left-right"></i></button>
-                                <button onclick="hapusKamar(${k.id})" class="p-2 bg-rose-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 rounded-lg transition" title="Hapus Kamar"><i class="ph-bold ph-trash"></i></button>
+                                <button onclick="ubahStatusKamar(${k.id})" class="btn-animate p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg transition" title="Ubah Status"><i class="ph-bold ph-arrows-left-right"></i></button>
+                                <button onclick="hapusKamar(${k.id})" class="btn-animate p-2 bg-rose-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 rounded-lg transition" title="Hapus Kamar"><i class="ph-bold ph-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -587,29 +669,137 @@
                 </div>
             `;
 
-            // Event listener modal tambah
             setTimeout(() => {
-                div.querySelector('#formTambahKamar').addEventListener('submit', (e) => {
+                div.querySelector('#formTambahKamar').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const id = parseInt(document.getElementById('k_id').value);
                     if (state.kamar.find(k => k.id === id)) return showToast('Nomor Kamar sudah digunakan!', 'error');
                     
-                    state.kamar.push({
+                    const newKamar = {
                         id,
                         fasilitas: document.getElementById('k_fasilitas').value,
                         lantai: parseInt(document.getElementById('k_lantai').value),
                         ukuran: parseFloat(document.getElementById('k_ukuran').value), 
                         harga: parseInt(document.getElementById('k_harga').value),
                         status: 'Tersedia'
-                    });
-                    document.getElementById('modalTambahKamar').classList.add('hidden');
-                    showToast('Kamar berhasil ditambahkan!');
-                    render();
+                    };
+
+                    try {
+                        await setDoc(getDocRef('kamar', id), newKamar);
+                        document.getElementById('modalTambahKamar').classList.add('hidden');
+                        showToast('Kamar berhasil ditambahkan!');
+                    } catch (error) {
+                        console.error(error);
+                        showToast('Gagal menyimpan kamar', 'error');
+                    }
                 });
             }, 0);
 
             return div;
         }
+
+        window.ubahStatusKamar = async (id) => {
+            let k = state.kamar.find(x => x.id === id);
+            if (!k) return;
+            const newStatus = k.status === 'Tersedia' ? 'Terisi' : 'Tersedia';
+            
+            try {
+                await updateDoc(getDocRef('kamar', id), { status: newStatus });
+                showToast(`Status Kamar ${id} sukses diubah!`);
+            } catch (error) {
+                console.error(error);
+                showToast('Gagal mengubah status kamar', 'error');
+            }
+        };
+
+        window.hapusKamar = async (id) => {
+            if(state.sewa.find(s => s.id_kamar === id)) return showToast('Tidak bisa dihapus: Kamar masih tercatat di riwayat sewa penghuni.', 'error');
+            if(confirm(`Yakin ingin menghapus Kamar ${id} secara permanen?`)) {
+                try {
+                    await deleteDoc(getDocRef('kamar', id));
+                    showToast('Kamar berhasil dihapus!', 'success');
+                } catch (error) {
+                    console.error(error);
+                    showToast('Gagal menghapus kamar', 'error');
+                }
+            }
+        };
+
+        window.showModalPindahKamar = (idPenghuni) => {
+            const p = state.penghuni.find(x => x.id === idPenghuni);
+            const kamarTersedia = state.kamar.filter(k => k.status === 'Tersedia');
+
+            if(kamarTersedia.length === 0) {
+                return showToast('Waduh, tidak ada kamar kosong saat ini!', 'error');
+            }
+
+            let optHtml = kamarTersedia.map(k => `<option value="${k.id}">Kamar ${k.id} (Lt.${k.lantai}) - ${formatRupiah(k.harga)}</option>`).join('');
+
+            const modalHtml = `
+                <div id="customModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
+                    <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-md m-4 modal-fade-in">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="p-2.5 bg-blue-100 dark:bg-blue-500/20 text-primary rounded-xl"><i class="ph-bold ph-truck text-2xl"></i></div>
+                            <h3 class="text-2xl font-bold dark:text-white">Pindah Kamar</h3>
+                        </div>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Pilih kamar tujuan baru untuk penghuni <b>${p.nama || p.username}</b>.</p>
+                        
+                        <label class="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Pilih Kamar Tersedia</label>
+                        <select id="selectKamarBaru" class="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-primary dark:text-white appearance-none cursor-pointer mb-8">
+                            ${optHtml}
+                        </select>
+                        
+                        <div class="flex gap-3 justify-end">
+                            <button onclick="closeModal()" class="btn-animate px-5 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600">Batal</button>
+                            <button onclick="prosesPindahKamar(${idPenghuni})" class="btn-animate px-6 py-3 rounded-xl font-bold text-white bg-primary hover:bg-blue-600 flex items-center gap-2"><i class="ph-bold ph-check"></i> Konfirmasi</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        };
+
+        window.closeModal = () => {
+            const m = document.getElementById('customModal');
+            if(m) {
+                m.classList.remove('modal-fade-in');
+                m.style.opacity = '0';
+                setTimeout(() => m.remove(), 300);
+            }
+        };
+
+        window.prosesPindahKamar = async (idPenghuni) => {
+            const el = document.getElementById('selectKamarBaru');
+            if(!el) return;
+            const newKamarId = parseInt(el.value);
+            const kamarLamaId = getAssignedRoom(idPenghuni);
+            
+            try {
+                // Proses update batch secara manual (Firestore batch di-skip untuk kesederhanaan, menggunakan update berurutan)
+                if(kamarLamaId !== '-') {
+                    await updateDoc(getDocRef('kamar', kamarLamaId), { status: 'Tersedia' });
+                }
+                
+                await updateDoc(getDocRef('kamar', newKamarId), { status: 'Terisi' });
+
+                // Update riwayat sewa terakhir atau tambah baru
+                const sortedSewa = [...state.sewa].sort((a, b) => b.id - a.id);
+                const userSewa = sortedSewa.find(s => s.id_penghuni === idPenghuni);
+                
+                if(userSewa) {
+                    await updateDoc(getDocRef('sewa', userSewa.id), { id_kamar: newKamarId });
+                } else {
+                    const newSewaId = Date.now();
+                    await setDoc(getDocRef('sewa', newSewaId), { id: newSewaId, id_penghuni: idPenghuni, id_kamar: newKamarId });
+                }
+
+                closeModal();
+                showToast(`Sip! Penghuni berhasil pindah ke Kamar ${newKamarId} 🚚`, 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('Gagal memproses pindah kamar', 'error');
+            }
+        };
 
         function renderAdminPenghuni() {
             const div = document.createElement('div');
@@ -617,6 +807,7 @@
             let tbody = '';
             state.penghuni.forEach(p => {
                 const kamarUser = getAssignedRoom(p.id);
+                const isKamarAktif = kamarUser !== '-';
                 tbody += `
                     <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                         <td class="p-4 font-mono text-xs text-slate-400">P-${p.id}</td>
@@ -632,7 +823,7 @@
                         <td class="p-4 text-slate-600 dark:text-slate-300 font-mono text-sm">${p.no_hp}</td>
                         <td class="p-4">
                             <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700 font-semibold text-sm">
-                                ${kamarUser !== '-' ? `Kmr ${kamarUser}` : 'Kosong'}
+                                ${isKamarAktif ? `Kmr ${kamarUser}` : 'Kosong'}
                             </span>
                         </td>
                         <td class="p-4 flex gap-2">
@@ -643,7 +834,8 @@
                 `;
             });
 
-            // Form options kamar
+            if(tbody === '') tbody = '<tr><td colspan="5" class="p-8 text-center text-slate-500">Belum ada penghuni aktif.</td></tr>';
+
             const kamarTersedia = state.kamar.filter(k => k.status === 'Tersedia');
             let optionsKamar = kamarTersedia.map(k => `<option value="${k.id}">Kamar ${k.id} - ${formatRupiah(k.harga)}</option>`).join('');
             if(optionsKamar === '') optionsKamar = '<option disabled selected>⚠️ Waduh, semua kamar penuh!</option>';
@@ -665,7 +857,7 @@
                                 <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 sticky top-0 backdrop-blur-sm z-10">
                                     <tr><th class="p-4 text-xs font-semibold uppercase tracking-wide">ID</th><th class="p-4 text-xs font-semibold uppercase tracking-wide">Profil</th><th class="p-4 text-xs font-semibold uppercase tracking-wide">Kontak</th><th class="p-4 text-xs font-semibold uppercase tracking-wide">Kamar</th><th class="p-4 text-xs font-semibold uppercase tracking-wide">Aksi</th></tr>
                                 </thead>
-                                <tbody>${tbody || '<tr><td colspan="5" class="text-center p-10 text-slate-400">Belum ada penghuni.</td></tr>'}</tbody>
+                                <tbody>${tbody}</tbody>
                             </table>
                         </div>
                     </div>
@@ -708,7 +900,7 @@
             `;
 
             setTimeout(() => {
-                div.querySelector('#formTambahPenghuni').addEventListener('submit', (e) => {
+                div.querySelector('#formTambahPenghuni').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const roomIdSelect = document.getElementById('p_kamar').value;
                     if(!roomIdSelect || roomIdSelect.startsWith('⚠️')) return showToast('Pilih kamar yang kosong dulu!', 'error');
@@ -718,30 +910,68 @@
 
                     const roomId = parseInt(roomIdSelect);
                     const kamar = state.kamar.find(k => k.id === roomId);
-                    const newId = state.penghuni.length > 0 ? Math.max(...state.penghuni.map(p=>p.id)) + 1 : 1;
                     
-                    state.penghuni.push({
-                        id: newId,
-                        username: u,
-                        nama: document.getElementById('p_nama').value,
-                        password: document.getElementById('p_pass').value,
-                        no_hp: document.getElementById('p_hp').value,
-                        tgl_masuk: new Date().toISOString().split('T')[0]
-                    });
+                    try {
+                        const newId = Date.now(); // Generate ID unik sementara
+                        
+                        await setDoc(getDocRef('penghuni', newId), {
+                            id: newId,
+                            username: u,
+                            nama: document.getElementById('p_nama').value,
+                            password: document.getElementById('p_pass').value,
+                            no_hp: document.getElementById('p_hp').value,
+                            tgl_masuk: new Date().toISOString().split('T')[0]
+                        });
 
-                    kamar.status = 'Terisi';
-                    state.sewa.push({ id: Date.now(), id_penghuni: newId, id_kamar: roomId });
-                    state.tagihan.push({
-                        id: Date.now(), id_penghuni: newId, id_kamar: roomId, nominal: kamar.harga, status_bayar: 'Belum Lunas', metode: null, tanggal: new Date().toISOString().split('T')[0]
-                    });
+                        await updateDoc(getDocRef('kamar', roomId), { status: 'Terisi' });
+                        
+                        const sewaId = Date.now() + 1;
+                        await setDoc(getDocRef('sewa', sewaId), { id: sewaId, id_penghuni: newId, id_kamar: roomId });
+                        
+                        const tagihanId = Date.now() + 2;
+                        await setDoc(getDocRef('tagihan', tagihanId), {
+                            id: tagihanId, id_penghuni: newId, id_kamar: roomId, nominal: kamar.harga, status_bayar: 'Belum Lunas', metode: null, tanggal: new Date().toISOString().split('T')[0]
+                        });
 
-                    showToast('Penghuni berhasil check-in!');
-                    render();
+                        showToast('Penghuni berhasil check-in & tersimpan ke database!');
+                    } catch (error) {
+                        console.error(error);
+                        showToast('Gagal mendaftarkan penghuni', 'error');
+                    }
                 });
             }, 0);
 
             return div;
         }
+
+        window.hapusPenghuni = async (id) => {
+            const p = state.penghuni.find(x => x.id === id);
+            if(confirm(`Yakin ingin melakukan Check-Out dan hapus permanen data ${p.nama || p.username}? Seluruh tagihan dan komplain terkait akan ikut terhapus.`)) {
+                try {
+                    const kamarId = getAssignedRoom(id);
+                    if(kamarId !== '-') {
+                        await updateDoc(getDocRef('kamar', kamarId), { status: 'Tersedia' });
+                    }
+                    
+                    // Menghapus data-data terkait secara berurutan
+                    const userTagihan = state.tagihan.filter(t => t.id_penghuni === id);
+                    for (let t of userTagihan) await deleteDoc(getDocRef('tagihan', t.id));
+                    
+                    const userKomplain = state.komplain.filter(k => k.id_penghuni === id);
+                    for (let k of userKomplain) await deleteDoc(getDocRef('komplain', k.id));
+                    
+                    const userSewa = state.sewa.filter(s => s.id_penghuni === id);
+                    for (let s of userSewa) await deleteDoc(getDocRef('sewa', s.id));
+                    
+                    await deleteDoc(getDocRef('penghuni', id));
+                    
+                    showToast(`Data ${p.nama || p.username} sukses dibersihkan!`, 'success');
+                } catch (error) {
+                    console.error(error);
+                    showToast('Gagal menghapus penghuni', 'error');
+                }
+            }
+        };
 
         function renderAdminTagihan() {
             const div = document.createElement('div');
@@ -758,7 +988,7 @@
                     html += `
                         <div class="p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 font-mono text-xs shadow-inner">INV<br>${t.id}</div>
+                                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 font-mono text-xs shadow-inner">INV<br>${String(t.id).substring(0,4)}</div>
                                 <div>
                                     <p class="font-bold text-slate-800 dark:text-slate-200">${p.nama || p.username || 'User Dihapus'} <span class="text-xs font-normal text-slate-400 ml-2">Kmr ${getAssignedRoom(t.id_penghuni)}</span></p>
                                     <p class="text-sm text-slate-500">Tgl: ${t.tanggal} • ${t.metode || 'Belum bayar'}</p>
@@ -813,13 +1043,17 @@
             return div;
         }
 
-        window.konfirmasiTagihan = (id) => {
+        window.konfirmasiTagihan = async (id) => {
             const t = state.tagihan.find(x => x.id === id);
             if(t) {
                 if(t.status_bayar === 'Belum Lunas' && !confirm('Yakin set Lunas tanpa konfirmasi penghuni?')) return;
-                t.status_bayar = 'Lunas';
-                showToast('Pembayaran berhasil diverifikasi!', 'success');
-                render();
+                try {
+                    await updateDoc(getDocRef('tagihan', id), { status_bayar: 'Lunas' });
+                    showToast('Pembayaran berhasil diverifikasi ke database!', 'success');
+                } catch (error) {
+                    console.error(error);
+                    showToast('Gagal memverifikasi tagihan', 'error');
+                }
             }
         };
 
@@ -827,7 +1061,9 @@
             const div = document.createElement('div');
             
             let listHtml = '';
-            [...state.komplain].reverse().forEach(k => {
+            // Sort by id descending (terbaru di atas)
+            const sortedKomplain = [...state.komplain].sort((a,b) => b.id - a.id);
+            sortedKomplain.forEach(k => {
                 const p = state.penghuni.find(x => x.id === k.id_penghuni) || {};
                 const isP = k.status === 'Pending';
                 
@@ -863,23 +1099,33 @@
             return div;
         }
 
-        window.selesaiKomplain = (id) => {
-            const k = state.komplain.find(x => x.id === id);
-            if(k) { k.status = 'Selesai'; showToast('Komplain ditandai selesai!'); render(); }
+        window.selesaiKomplain = async (id) => {
+            try {
+                await updateDoc(getDocRef('komplain', id), { status: 'Selesai' });
+                showToast('Komplain ditandai selesai di database!');
+            } catch (error) {
+                console.error(error);
+                showToast('Gagal update status komplain', 'error');
+            }
         };
-        window.hapusKomplain = (id) => {
-            if(confirm('Hapus komplain ini dari riwayat?')) {
-                state.komplain = state.komplain.filter(x => x.id !== id);
-                showToast('Terhapus.'); render();
+        window.hapusKomplain = async (id) => {
+            if(confirm('Hapus komplain ini dari riwayat secara permanen?')) {
+                try {
+                    await deleteDoc(getDocRef('komplain', id));
+                    showToast('Terhapus dari database.');
+                } catch (error) {
+                    console.error(error);
+                    showToast('Gagal menghapus komplain', 'error');
+                }
             }
         };
 
-        // FITUR BARU: PENGUMUMAN
         function renderAdminPengumuman() {
             const div = document.createElement('div');
             
             let listHtml = '';
-            [...state.pengumuman].reverse().forEach(p => {
+            const sortedPengumuman = [...state.pengumuman].sort((a,b) => b.id - a.id);
+            sortedPengumuman.forEach(p => {
                 const bg = p.tipe === 'penting' ? 'bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/20' : 'bg-blue-50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20';
                 const icon = p.tipe === 'penting' ? 'ph-warning-octagon text-red-500' : 'ph-info text-blue-500';
                 listHtml += `
@@ -930,23 +1176,40 @@
             `;
 
             setTimeout(() => {
-                div.querySelector('#formPengumuman').addEventListener('submit', (e) => {
+                div.querySelector('#formPengumuman').addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    state.pengumuman.push({
-                        id: Date.now(),
+                    const newId = Date.now();
+                    const newPengumuman = {
+                        id: newId,
                         judul: document.getElementById('peng_judul').value,
                         isi: document.getElementById('peng_isi').value,
                         tipe: document.getElementById('peng_tipe').value,
                         tanggal: new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})
-                    });
-                    showToast('Pengumuman terkirim ke semua penghuni!', 'success');
-                    render();
+                    };
+                    
+                    try {
+                        await setDoc(getDocRef('pengumuman', newId), newPengumuman);
+                        showToast('Pengumuman terkirim ke semua penghuni (via Database)!', 'success');
+                        document.getElementById('formPengumuman').reset();
+                    } catch (error) {
+                        console.error(error);
+                        showToast('Gagal mengirim pengumuman', 'error');
+                    }
                 });
             }, 0);
 
             return div;
         }
-        window.hapusPengumuman = (id) => { state.pengumuman = state.pengumuman.filter(x => x.id !== id); render(); };
+        
+        window.hapusPengumuman = async (id) => { 
+            try {
+                await deleteDoc(getDocRef('pengumuman', id));
+                showToast('Pengumuman dihapus dari database.');
+            } catch (error) {
+                console.error(error);
+                showToast('Gagal menghapus pengumuman', 'error');
+            }
+        };
 
 
         // ==========================================
@@ -959,7 +1222,9 @@
             
             let pengumumanHtml = '';
             if(state.pengumuman.length > 0) {
-                const latest = state.pengumuman[state.pengumuman.length - 1];
+                // Ambil pengumuman terbaru
+                const sorted = [...state.pengumuman].sort((a,b) => a.id - b.id);
+                const latest = sorted[sorted.length - 1];
                 const iconP = latest.tipe === 'penting' ? 'ph-warning-octagon text-red-500' : 'ph-megaphone text-primary';
                 const bgP = latest.tipe === 'penting' ? 'bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/10 border-red-200 dark:border-red-800' : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 border-blue-200 dark:border-blue-800';
                 
@@ -1026,9 +1291,11 @@
         function renderPenghuniTagihan() {
             const div = document.createElement('div');
             const myTagihan = state.tagihan.filter(t => t.id_penghuni === state.loggedInUser.id);
+            // Sort
+            myTagihan.sort((a,b) => b.id - a.id);
             
             let html = '<div class="space-y-4 fade-in delay-100">';
-            myTagihan.reverse().forEach(t => {
+            myTagihan.forEach(t => {
                 const isLunas = t.status_bayar === 'Lunas';
                 const isNunggu = t.status_bayar === 'Menunggu Konfirmasi';
                 let bgBorder = isLunas ? 'border-green-200 dark:border-green-500/30 bg-white dark:bg-surface' : (isNunggu ? 'border-yellow-200 dark:border-yellow-500/30 bg-yellow-50/30 dark:bg-yellow-900/10' : 'border-red-200 dark:border-red-500/30 bg-red-50/30 dark:bg-red-900/10 shadow-md');
@@ -1045,7 +1312,7 @@
                                 <i class="ph-fill ph-receipt text-3xl text-slate-400"></i>
                             </div>
                             <div>
-                                <p class="text-xs font-mono text-slate-400 mb-1">#INV-${t.id} &bull; ${t.tanggal}</p>
+                                <p class="text-xs font-mono text-slate-400 mb-1">#INV-${String(t.id).substring(0,4)} &bull; ${t.tanggal}</p>
                                 <h4 class="text-2xl font-extrabold dark:text-white mb-2">${formatRupiah(t.nominal)}</h4>
                                 <span class="px-3 py-1 rounded-lg text-xs font-bold ${badge}">${t.status_bayar}</span>
                             </div>
@@ -1069,7 +1336,7 @@
             return div;
         }
 
-        window.bayarTagihan = (id) => {
+        window.bayarTagihan = async (id) => {
             const htmlModal = `
             Pilih metode pembayaran (Ketik Angka):
             1 - 🏦 Transfer BCA
@@ -1077,14 +1344,19 @@
             `;
             const m = prompt(htmlModal);
             if(m === '1' || m === '2') {
-                const t = state.tagihan.find(x => x.id === id);
-                if(t) {
-                    t.status_bayar = 'Menunggu Konfirmasi';
-                    t.metode = m === '1' ? 'Transfer BCA' : 'Cash';
+                try {
+                    const metodeStr = m === '1' ? 'Transfer BCA' : 'Cash';
+                    await updateDoc(getDocRef('tagihan', id), { 
+                        status_bayar: 'Menunggu Konfirmasi',
+                        metode: metodeStr
+                    });
+                    
                     if(m==='1') alert('💳 INFO TRANSFER:\n\nBCA: 988657896\nA.N Kost Rama\n\nSimpan bukti transfer. Admin akan cek mutasi 1x24 jam.');
                     else alert('🤝 INFO CASH:\n\nNotifikasi dikirim! Admin akan mendatangimu atau temui di pos jaga.');
-                    showToast('Sip! Pembayaran sedang diproses admin.', 'success');
-                    render();
+                    showToast('Permintaan pembayaran tersimpan di database!', 'success');
+                } catch (error) {
+                    console.error(error);
+                    showToast('Gagal memproses pembayaran', 'error');
                 }
             }
         };
@@ -1094,7 +1366,7 @@
             
             const myKomplain = state.komplain.filter(k => k.id_penghuni === state.loggedInUser.id);
             let kompHtml = '';
-            [...myKomplain].reverse().forEach(k => {
+            [...myKomplain].sort((a,b) => b.id - a.id).forEach(k => {
                 const isP = k.status === 'Pending';
                 kompHtml += `
                     <div class="p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-surface mb-3 flex gap-4 items-start shadow-sm">
@@ -1130,30 +1402,48 @@
             `;
 
             setTimeout(() => {
-                div.querySelector('#formKirimKomplain').addEventListener('submit', (e) => {
+                div.querySelector('#formKirimKomplain').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const isi = document.getElementById('isiKomplain').value;
-                    const newId = state.komplain.length > 0 ? Math.max(...state.komplain.map(k=>k.id)) + 1 : 1;
-                    state.komplain.push({ id: newId, id_penghuni: state.loggedInUser.id, isi, status: 'Pending', tanggal: new Date().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) });
-                    showToast('Laporan sukses dikirim ke Admin!', 'success');
-                    render();
+                    const newId = Date.now();
+                    
+                    try {
+                        await setDoc(getDocRef('komplain', newId), { 
+                            id: newId, 
+                            id_penghuni: state.loggedInUser.id, 
+                            isi, 
+                            status: 'Pending', 
+                            tanggal: new Date().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) 
+                        });
+                        showToast('Laporan sukses dikirim dan tersimpan di database!', 'success');
+                        document.getElementById('formKirimKomplain').reset();
+                    } catch (error) {
+                        console.error(error);
+                        showToast('Gagal mengirim laporan', 'error');
+                    }
                 });
             }, 0);
 
             return div;
         }
 
-        window.batalKomplain = (id) => {
+        window.batalKomplain = async (id) => {
             if(confirm('Batalkan laporan komplain ini?')) {
-                state.komplain = state.komplain.filter(x => x.id !== id);
-                showToast('Dibatalkan.'); render();
+                try {
+                    await deleteDoc(getDocRef('komplain', id));
+                    showToast('Komplain dibatalkan dan dihapus dari database.');
+                } catch (error) {
+                    console.error(error);
+                    showToast('Gagal membatalkan komplain', 'error');
+                }
             }
         };
 
-        // Initialize App
-        loadData(); 
+        // Initialize Base Theme
         initTheme(); 
-        render();
+
+        // Start Firebase Auth Flow which will trigger data loading
+        initAuth();
 
     </script>
 </body>
