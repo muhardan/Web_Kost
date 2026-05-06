@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Kost Rama Modern</title>
     <!-- Tailwind CSS untuk Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,16 +17,12 @@
                 extend: {
                     fontFamily: { sans: ['Poppins', 'sans-serif'] },
                     colors: {
-                        primary: '#4f46e5', // Indigo 600 - Lebih modern
+                        primary: '#4f46e5',
                         primary_hover: '#4338ca',
-                        secondary: '#10b981', // Emerald 500
-                        dark: '#0f172a', // Slate 900
-                        darker: '#020617', // Slate 950
-                        surface: '#1e293b' // Slate 800
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
-                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        secondary: '#10b981',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        surface: '#1e293b'
                     }
                 }
             }
@@ -35,11 +31,9 @@
     <style>
         body { font-family: 'Poppins', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        /* Animasi Transisi & Hover Global */
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         .modal-fade-in { animation: modalFadeIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
-        /* Delay untuk animasi berurutan (Staggered) */
         .delay-100 { animation-delay: 100ms; }
         .delay-200 { animation-delay: 200ms; }
         .delay-300 { animation-delay: 300ms; }
@@ -53,30 +47,36 @@
         .dark .card-hover:hover { box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3); border-color: rgba(79, 70, 229, 0.5); }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         
         /* Toast Notification */
-        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
-        .toast { padding: 16px 24px; border-radius: 16px; color: white; font-weight: 600; box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2); opacity: 0; transform: translateY(100%); animation: toastSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastFadeOut 0.4s forwards 3.5s; display: flex; align-items: center; gap: 12px; backdrop-filter: blur(10px); }
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 12px; width: 90%; max-width: 400px; pointer-events: none;}
+        .toast { pointer-events: auto; padding: 14px 20px; border-radius: 16px; color: white; font-weight: 600; box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3); opacity: 0; transform: translateY(-100%); animation: toastSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastFadeOut 0.4s forwards 3.5s; display: flex; align-items: center; gap: 12px; backdrop-filter: blur(10px); }
         .toast.success { background: linear-gradient(135deg, #10b981, #059669); }
         .toast.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .toast.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        @keyframes toastSlideUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastSlideDown { to { opacity: 1; transform: translateY(0); } }
         @keyframes toastFadeOut { to { opacity: 0; transform: translateY(-20px); } }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        /* Update Badge Notification (Float at bottom center, above nav bar) */
+        #update-badge { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(150%); z-index: 9998; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; }
+        #update-badge.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        @media (min-width: 768px) { #update-badge { bottom: 30px; } }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Glassmorphism utility */
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .dark .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+        .dark .glass { background: rgba(15, 23, 42, 0.85); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 
-        /* Loader */
+        /* Safe area padding for mobile notches */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        }
+
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -85,6 +85,11 @@
 
     <!-- Toast Container -->
     <div id="toast-container"></div>
+    
+    <!-- Update Badge Notification -->
+    <button id="update-badge" onclick="triggerManualRender()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full shadow-2xl border-2 border-white/20 flex items-center gap-2">
+        <i class="ph-bold ph-arrows-clockwise animate-spin-slow text-lg"></i> Data Baru. Refresh
+    </button>
 
     <!-- App Container -->
     <div id="app" class="w-full h-full overflow-hidden flex relative">
@@ -93,7 +98,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -104,9 +108,7 @@
         // ==========================================
         let firebaseConfig = null;
         if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-            try {
-                firebaseConfig = JSON.parse(__firebase_config);
-            } catch(e) { console.error("Error parsing __firebase_config"); }
+            try { firebaseConfig = JSON.parse(__firebase_config); } catch(e) { }
         }
 
         if (!firebaseConfig) {
@@ -124,25 +126,20 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        // Setup App ID
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'kost-Rama-app';
 
         // ==========================================
-        // 2. STATE MANAGEMENT (FIRESTORE BASED)
+        // 2. STATE MANAGEMENT 
         // ==========================================
         let state = {
             loggedInUser: null, 
-            admin: [],
-            penghuni: [],
-            kamar: [],
-            sewa: [],
-            tagihan: [],
-            komplain: [],
-            pengumuman: [],
+            admin: [], penghuni: [], kamar: [], sewa: [], tagihan: [], komplain: [], pengumuman: [],
             isDataLoaded: false
         };
 
+        let pendingStateUpdates = {}; 
+        let hasPendingUpdates = false;
+        let isLocalAction = false; 
         let currentTab = 'overview';
         let unsubscribeListeners = [];
 
@@ -153,14 +150,10 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            let icon = '';
-            if(type === 'success') icon = '<i class="ph-fill ph-check-circle text-3xl opacity-90"></i>';
-            else if(type === 'error') icon = '<i class="ph-fill ph-warning-octagon text-3xl opacity-90"></i>';
-            else icon = '<i class="ph-fill ph-info text-3xl opacity-90"></i>';
-            
-            toast.innerHTML = `${icon} <span class="tracking-wide text-sm">${message}</span>`;
+            let icon = type === 'success' ? '<i class="ph-fill ph-check-circle text-2xl"></i>' : (type === 'error' ? '<i class="ph-fill ph-warning-octagon text-2xl"></i>' : '<i class="ph-fill ph-info text-2xl"></i>');
+            toast.innerHTML = `${icon} <span class="tracking-wide text-sm font-medium leading-snug">${message}</span>`;
             container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 4000);
+            setTimeout(() => { toast.remove(); }, 3500);
         };
 
         window.initTheme = () => {
@@ -171,14 +164,11 @@
 
         window.toggleTheme = () => {
             document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
             render(); 
         };
 
-        window.formatRupiah = (angka) => {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-        };
+        window.formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
 
         window.getAssignedRoom = (userId) => {
             const sortedSewa = [...state.sewa].sort((a, b) => b.id - a.id);
@@ -186,38 +176,20 @@
             return userSewa ? userSewa.id_kamar : '-';
         };
 
-        // Mobile Sidebar Toggle
-        window.toggleMobileSidebar = () => {
-            const sidebar = document.getElementById('mobileSidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            if(sidebar && overlay) {
-                if(sidebar.classList.contains('-translate-x-full')) {
-                    sidebar.classList.remove('-translate-x-full');
-                    overlay.classList.remove('hidden');
-                    // slight delay to allow display:block to apply before opacity transition
-                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-                } else {
-                    sidebar.classList.add('-translate-x-full');
-                    overlay.classList.add('opacity-0');
-                    setTimeout(() => overlay.classList.add('hidden'), 300);
-                }
-            }
-        };
+        const runLocalAction = async (actionFn) => {
+            isLocalAction = true;
+            try { await actionFn(); } catch (e) { console.error(e); showToast('Terjadi kesalahan sistem', 'error'); }
+            setTimeout(() => { isLocalAction = false; }, 1000);
+        }
 
         // ==========================================
-        // 4. FIREBASE INITIALIZATION & SYNC
+        // 4. FIREBASE INITIALIZATION & SMART SYNC
         // ==========================================
         async function initAuth() {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Auth Error:", error);
-                document.getElementById('app').innerHTML = `<div class="p-6 text-center text-red-500">Gagal terhubung ke autentikasi: ${error.message}</div>`;
-            }
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                else await signInAnonymously(auth);
+            } catch (error) { document.getElementById('app').innerHTML = `<div class="p-6 text-center text-red-500">Gagal terhubung ke autentikasi: ${error.message}</div>`; }
         }
 
         const getColRef = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
@@ -226,27 +198,17 @@
         async function seedInitialDataIfNeeded() {
             const adminSnap = await getDocs(getColRef('admin'));
             if (adminSnap.empty) {
-                console.log("Seeding initial data...");
                 await setDoc(getDocRef('admin', 1), { id: 1, username: 'admin', password: '123', nama: 'Bapak Kost' });
-                
                 await setDoc(getDocRef('kamar', 101), { id: 101, fasilitas: 'Kasur, Lemari, AC, Wi-Fi', lantai: 1, ukuran: 4, harga: 800000, status: 'Terisi' });
-                await setDoc(getDocRef('kamar', 102), { id: 102, fasilitas: 'Kasur, Lemari, Kipas, Jendela Luar', lantai: 1, ukuran: 3, harga: 550000, status: 'Terisi' });
-                await setDoc(getDocRef('kamar', 201), { id: 201, fasilitas: 'Kasur, Meja Belajar, AC, Kamar Mandi Dalam', lantai: 2, ukuran: 5, harga: 1200000, status: 'Tersedia' });
-                await setDoc(getDocRef('kamar', 202), { id: 202, fasilitas: 'Kasur, Lemari, Kipas', lantai: 2, ukuran: 3, harga: 450000, status: 'Tersedia' });
-                
+                await setDoc(getDocRef('kamar', 102), { id: 102, fasilitas: 'Kasur, Lemari, Kipas, Jendela', lantai: 1, ukuran: 3, harga: 550000, status: 'Terisi' });
+                await setDoc(getDocRef('kamar', 201), { id: 201, fasilitas: 'Kasur, Meja, AC, KM Dalam', lantai: 2, ukuran: 5, harga: 1200000, status: 'Tersedia' });
                 await setDoc(getDocRef('penghuni', 1), { id: 1, username: 'rama', password: '123', no_hp: '08123456789', nama: 'Rama Wijaya', tgl_masuk: '2026-01-10' });
                 await setDoc(getDocRef('penghuni', 2), { id: 2, username: 'budi', password: '123', no_hp: '08567890123', nama: 'Budi Santoso', tgl_masuk: '2026-03-15' });
-                
                 await setDoc(getDocRef('sewa', 1), { id: 1, id_penghuni: 1, id_kamar: 101 });
                 await setDoc(getDocRef('sewa', 2), { id: 2, id_penghuni: 2, id_kamar: 102 });
-                
                 await setDoc(getDocRef('tagihan', 1), { id: 1, id_penghuni: 1, id_kamar: 101, nominal: 800000, status_bayar: 'Belum Lunas', metode: null, tanggal: new Date().toISOString().split('T')[0] });
                 await setDoc(getDocRef('tagihan', 2), { id: 2, id_penghuni: 2, id_kamar: 102, nominal: 550000, status_bayar: 'Lunas', metode: 'Transfer BCA', tanggal: '2026-04-01' });
-                
                 await setDoc(getDocRef('komplain', 1), { id: 1, id_penghuni: 2, isi: 'Air di kamar mandi lantai 1 mampet pak.', status: 'Pending', tanggal: 'Baru saja' });
-                
-                await setDoc(getDocRef('pengumuman', 1), { id: 1, judul: 'Pembersihan AC Rutin', isi: 'Halo semuanya, besok pagi jam 09.00 akan ada tukang AC yang datang. Mohon kerjasamanya ya.', tanggal: 'Hari ini', tipe: 'info' });
-                console.log("Seeding done.");
             }
         }
 
@@ -261,36 +223,43 @@
                 const unsub = onSnapshot(getColRef(colName), (snapshot) => {
                     const data = [];
                     snapshot.forEach(doc => data.push(doc.data()));
-                    state[colName] = data;
                     
                     if (!state.isDataLoaded) {
+                        state[colName] = data;
                         loadedCount++;
                         if (loadedCount === collectionsToSync.length) {
                             state.isDataLoaded = true;
                             render();
                         }
                     } else {
-                        render();
+                        if (isLocalAction || !state.loggedInUser) {
+                            state[colName] = data;
+                            render(); 
+                        } else {
+                            pendingStateUpdates[colName] = data;
+                            hasPendingUpdates = true;
+                            document.getElementById('update-badge')?.classList.add('show');
+                        }
                     }
-                }, (error) => {
-                    console.error(`Error listening to ${colName}:`, error);
                 });
                 unsubscribeListeners.push(unsub);
             });
         }
 
+        window.triggerManualRender = () => {
+            for(let key in pendingStateUpdates) { state[key] = pendingStateUpdates[key]; }
+            pendingStateUpdates = {}; hasPendingUpdates = false;
+            document.getElementById('update-badge')?.classList.remove('show');
+            render(); 
+        };
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                if (firebaseConfig.apiKey === "") {
-                    document.getElementById('app').innerHTML = `<div class="p-8 text-center"><h2 class="text-xl font-bold text-red-500 mb-2">Setup Required</h2><p>Please update <code>firebaseConfig</code> with your actual Firebase project settings.</p></div>`;
-                    return;
-                }
-                
+                if (firebaseConfig.apiKey === "") return;
                 await seedInitialDataIfNeeded();
                 setupListeners();
             }
         });
-
 
         // ==========================================
         // 5. MAIN RENDERER
@@ -312,199 +281,218 @@
         // 6. VIEWS (COMPONENTS)
         // ==========================================
 
-        // --- LOGIN VIEW ---
         function LoginView() {
             const div = document.createElement('div');
-            div.className = 'w-full h-full flex items-center justify-center p-6 fade-in relative overflow-hidden bg-slate-50 dark:bg-darker';
+            div.className = 'w-full h-full flex items-center justify-center p-4 md:p-6 fade-in relative overflow-hidden bg-slate-50 dark:bg-darker';
             
             div.innerHTML = `
                 <div class="absolute inset-0 z-0">
-                    <div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten animate-pulse" style="animation-duration: 4s;"></div>
-                    <div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-secondary/20 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-lighten animate-pulse" style="animation-duration: 5s;"></div>
+                    <div class="absolute top-[-20%] left-[-10%] w-[400px] md:w-[600px] h-[400px] md:h-[600px] bg-primary/20 rounded-full blur-[80px] md:blur-[100px] mix-blend-multiply dark:mix-blend-lighten animate-pulse" style="animation-duration: 4s;"></div>
+                    <div class="absolute bottom-[-20%] right-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-secondary/20 rounded-full blur-[80px] md:blur-[100px] mix-blend-multiply dark:mix-blend-lighten animate-pulse" style="animation-duration: 5s;"></div>
                 </div>
 
-                <div class="relative z-10 w-full max-w-md glass p-8 md:p-10 rounded-[2rem] shadow-2xl border border-white/50 dark:border-slate-700/50">
+                <div class="relative z-10 w-full max-w-md glass p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl border border-white/50 dark:border-slate-700/50">
                     <div class="text-center mb-8">
-                        <div class="inline-flex p-4 bg-gradient-to-tr from-primary to-indigo-400 rounded-2xl mb-5 shadow-lg shadow-primary/30 transform rotate-3">
+                        <div class="inline-flex p-3.5 md:p-4 bg-gradient-to-tr from-primary to-indigo-400 rounded-2xl mb-4 md:mb-5 shadow-lg shadow-primary/30 transform rotate-3">
                             <i class="ph-fill ph-buildings text-4xl text-white"></i>
                         </div>
-                        <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight mb-2">Kost Rama</h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Sistem Manajemen Kost Cerdas</p>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight mb-1 md:mb-2">Kost Rama</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-medium">Sistem Manajemen Kost Cerdas</p>
                     </div>
                     
-                    <form id="loginForm" class="space-y-5">
+                    <form id="loginForm" class="space-y-4 md:space-y-5">
                         <div>
-                            <label class="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Username</label>
+                            <label class="block text-xs md:text-sm font-semibold mb-1.5 md:mb-2 text-slate-700 dark:text-slate-300">Username</label>
                             <div class="relative group">
                                 <i class="ph ph-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg group-focus-within:text-primary transition-colors"></i>
-                                <input type="text" id="username" placeholder="Masukkan username" required class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-800 dark:text-white backdrop-blur-sm">
+                                <input type="text" id="username" placeholder="Masukkan username" required class="w-full pl-11 md:pl-12 pr-4 py-3 md:py-3.5 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-800 dark:text-white backdrop-blur-md text-sm md:text-base">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Password</label>
+                            <label class="block text-xs md:text-sm font-semibold mb-1.5 md:mb-2 text-slate-700 dark:text-slate-300">Password</label>
                             <div class="relative group">
                                 <i class="ph ph-lock-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg group-focus-within:text-primary transition-colors"></i>
-                                <input type="password" id="password" placeholder="••••••••" required class="w-full pl-12 pr-12 py-3.5 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-800 dark:text-white backdrop-blur-sm">
-                                <button type="button" id="togglePasswordBtn" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors p-2 rounded-lg">
+                                <input type="password" id="password" placeholder="••••••••" required class="w-full pl-11 md:pl-12 pr-12 py-3 md:py-3.5 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-800 dark:text-white backdrop-blur-md text-sm md:text-base">
+                                <button type="button" id="togglePasswordBtn" class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors p-2 rounded-lg">
                                     <i id="togglePasswordIcon" class="ph ph-eye-slash text-xl"></i>
                                 </button>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-2 text-slate-700 dark:text-slate-300">Akses Masuk</label>
+                            <label class="block text-xs md:text-sm font-semibold mb-1.5 md:mb-2 text-slate-700 dark:text-slate-300">Akses Masuk</label>
                             <div class="relative group">
                                 <i class="ph ph-shield-check absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg group-focus-within:text-primary transition-colors"></i>
-                                <select id="role" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-800 dark:text-white appearance-none cursor-pointer backdrop-blur-sm font-medium">
+                                <select id="role" class="w-full pl-11 md:pl-12 pr-4 py-3 md:py-3.5 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-800 dark:text-white appearance-none cursor-pointer backdrop-blur-md font-medium text-sm md:text-base">
                                     <option value="Admin">🔑 Admin Kost</option>
                                     <option value="Penghuni">👤 Penghuni Kamar</option>
                                 </select>
                                 <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                             </div>
                         </div>
-                        <button type="submit" class="btn-animate w-full py-4 mt-6 bg-gradient-to-r from-primary to-indigo-500 text-white font-bold rounded-xl flex justify-center items-center gap-2 shadow-lg shadow-primary/30">
+                        <button type="submit" class="btn-animate w-full py-3.5 md:py-4 mt-6 md:mt-8 bg-gradient-to-r from-primary to-indigo-500 text-white font-bold rounded-xl flex justify-center items-center gap-2 shadow-lg shadow-primary/30 text-sm md:text-base">
                             <span class="tracking-wide">MASUK SEKARANG</span> <i class="ph-bold ph-arrow-right"></i>
                         </button>
                     </form>
                 </div>
             `;
 
-            const toggleBtn = div.querySelector('#togglePasswordBtn');
-            const passInput = div.querySelector('#password');
-            const toggleIcon = div.querySelector('#togglePasswordIcon');
-            
+            const toggleBtn = div.querySelector('#togglePasswordBtn'), passInput = div.querySelector('#password'), toggleIcon = div.querySelector('#togglePasswordIcon');
             toggleBtn.addEventListener('click', () => {
-                if (passInput.type === 'password') {
-                    passInput.type = 'text';
-                    toggleIcon.className = 'ph-fill ph-eye text-xl text-primary';
-                } else {
-                    passInput.type = 'password';
-                    toggleIcon.className = 'ph ph-eye-slash text-xl text-slate-400';
-                }
+                if (passInput.type === 'password') { passInput.type = 'text'; toggleIcon.className = 'ph-fill ph-eye text-xl text-primary'; } 
+                else { passInput.type = 'password'; toggleIcon.className = 'ph ph-eye-slash text-xl text-slate-400'; }
             });
 
             div.querySelector('#loginForm').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const u = div.querySelector('#username').value.trim();
-                const p = div.querySelector('#password').value.trim();
-                const r = div.querySelector('#role').value.replace('🔑 ', '').replace('👤 ', '').replace(' Kost', '').replace(' Kamar', '').trim();
-
-                let userFound = null;
-                if (r === 'Admin') userFound = state.admin.find(x => x.username === u && x.password === p);
-                else userFound = state.penghuni.find(x => x.username === u && x.password === p);
+                const u = div.querySelector('#username').value.trim(), p = div.querySelector('#password').value.trim(), r = div.querySelector('#role').value.replace('🔑 ', '').replace('👤 ', '').replace(' Kost', '').replace(' Kamar', '').trim();
+                let userFound = r === 'Admin' ? state.admin.find(x => x.username === u && x.password === p) : state.penghuni.find(x => x.username === u && x.password === p);
 
                 if (userFound) {
                     state.loggedInUser = { id: userFound.id, username: userFound.username, role: r, nama: userFound.nama || userFound.username };
                     currentTab = 'overview'; 
                     showToast(`Selamat datang, ${state.loggedInUser.nama}!`, 'success');
                     render();
-                } else {
-                    showToast('Username atau Password Salah!', 'error');
-                }
+                } else { showToast('Username atau Password Salah!', 'error'); }
             });
 
             return div;
         }
 
-        // --- MAIN LAYOUT (SIDEBAR + CONTENT) ---
+        // --- MAIN LAYOUT (MOBILE NAV BAR + DESKTOP SIDEBAR) ---
         function MainLayout() {
             const container = document.createElement('div');
             container.className = 'flex w-full h-full overflow-hidden bg-slate-50 dark:bg-darker relative';
 
             const isAdmin = state.loggedInUser.role === 'Admin';
             
+            // Konfigurasi Menu
             const menus = isAdmin ? [
-                { id: 'overview', icon: 'ph-squares-four', label: 'Overview' },
-                { id: 'kamar', icon: 'ph-door', label: 'Kamar Kost' },
-                { id: 'penghuni', icon: 'ph-users', label: 'Penghuni' },
-                { id: 'tagihan', icon: 'ph-wallet', label: 'Tagihan' },
-                { id: 'komplain', icon: 'ph-chat-circle-text', label: 'Komplain' },
-                { id: 'pengumuman', icon: 'ph-megaphone', label: 'Pengumuman' },
+                { id: 'overview', icon: 'ph-squares-four', label: 'Overview', showOnMobile: true }, 
+                { id: 'kamar', icon: 'ph-door', label: 'Kamar', showOnMobile: true },
+                { id: 'penghuni', icon: 'ph-users', label: 'Penghuni', showOnMobile: true }, 
+                { id: 'tagihan', icon: 'ph-wallet', label: 'Tagihan', showOnMobile: true },
+                { id: 'komplain', icon: 'ph-chat-circle-text', label: 'Komplain', showOnMobile: false }, // Di hidden di bottom nav mobile, akses lewat menu "Lainnya"
+                { id: 'pengumuman', icon: 'ph-megaphone', label: 'Info', showOnMobile: false },
+                { id: 'more', icon: 'ph-dots-three-circle', label: 'Lainnya', showOnMobile: true, isAction: true } // Tombol khusus mobile
             ] : [
-                { id: 'overview', icon: 'ph-house', label: 'Beranda' },
-                { id: 'tagihan', icon: 'ph-receipt', label: 'Tagihan Saya' },
-                { id: 'komplain', icon: 'ph-headset', label: 'Pusat Bantuan' },
+                { id: 'overview', icon: 'ph-house', label: 'Beranda', showOnMobile: true }, 
+                { id: 'tagihan', icon: 'ph-receipt', label: 'Tagihan', showOnMobile: true },
+                { id: 'komplain', icon: 'ph-headset', label: 'Bantuan', showOnMobile: true },
             ];
 
-            let sidebarMenus = menus.map(m => `
-                <button onclick="changeTab('${m.id}')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-1.5 transition-all ${currentTab === m.id ? 'bg-primary text-white font-semibold shadow-md shadow-primary/20' : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-white font-medium'}">
-                    <i class="${currentTab === m.id ? 'ph-fill' : 'ph'} ${m.icon} text-xl"></i>
-                    <span>${m.label}</span>
-                </button>
-            `).join('');
-
-            // Sidebar Desktop
+            // --- 1. SIDEBAR DESKTOP (Hidden on Mobile) ---
             const sidebar = document.createElement('aside');
             sidebar.className = 'w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-surface hidden md:flex flex-col z-20';
             
-            const sidebarInnerHtml = `
+            let sidebarMenusHtml = menus.filter(m => !m.isAction).map(m => `
+                <button onclick="changeTab('${m.id}')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-1.5 transition-all ${currentTab === m.id ? 'bg-primary text-white font-semibold shadow-md shadow-primary/20' : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-white font-medium'}">
+                    <i class="${currentTab === m.id ? 'ph-fill' : 'ph'} ${m.icon} text-xl"></i><span>${m.label === 'Info' ? 'Pengumuman' : m.label}</span>
+                </button>
+            `).join('');
+
+            sidebar.innerHTML = `
                 <div class="h-20 flex items-center px-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
-                    <div class="flex items-center gap-3 text-primary">
-                        <i class="ph-fill ph-buildings text-3xl"></i>
-                        <span class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-white">Kost Rama</span>
-                    </div>
+                    <div class="flex items-center gap-3 text-primary"><i class="ph-fill ph-buildings text-3xl"></i><span class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-white">Kost Rama</span></div>
                 </div>
                 <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">Menu Utama</p>
-                    ${sidebarMenus}
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">Menu Utama</p>${sidebarMenusHtml}
                 </div>
                 <div class="p-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
                     <div class="flex items-center gap-3 mb-4 px-2">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-indigo-400 text-white flex items-center justify-center font-bold shadow-sm shrink-0">
-                            ${state.loggedInUser.username.charAt(0).toUpperCase()}
-                        </div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-indigo-400 text-white flex items-center justify-center font-bold shadow-sm shrink-0">${state.loggedInUser.username.charAt(0).toUpperCase()}</div>
                         <div class="overflow-hidden">
                             <p class="text-sm font-bold text-slate-800 dark:text-white truncate">${state.loggedInUser.nama || state.loggedInUser.username}</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">${state.loggedInUser.role}</p>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${state.loggedInUser.role}</p>
                         </div>
                     </div>
-                    <button onclick="doLogout()" class="btn-animate w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border border-rose-100 dark:border-red-500/20 rounded-xl font-bold hover:bg-red-500 hover:text-white transition-colors">
+                    <button onclick="doLogout()" class="btn-animate w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-500 hover:text-white transition-colors">
                         <i class="ph-bold ph-sign-out"></i> Keluar
                     </button>
                 </div>
             `;
-            sidebar.innerHTML = sidebarInnerHtml;
 
-            // Overlay & Sidebar Mobile
-            const mobileOverlay = document.createElement('div');
-            mobileOverlay.id = 'mobileOverlay';
-            mobileOverlay.className = 'fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 md:hidden';
-            mobileOverlay.onclick = toggleMobileSidebar;
+            // --- 2. BOTTOM NAV MOBILE (Hidden on Desktop) ---
+            const bottomNav = document.createElement('nav');
+            bottomNav.className = 'md:hidden fixed bottom-0 left-0 right-0 glass z-40 flex justify-around items-center h-16 pb-safe px-1 border-t border-slate-200 dark:border-slate-800';
+            
+            let bottomNavHtml = '';
+            menus.filter(m => m.showOnMobile).forEach(m => {
+                // Determine active state. If 'more' is active, highlight the more button.
+                let isActive = currentTab === m.id;
+                if (m.id === 'more' && (currentTab === 'komplain' || currentTab === 'pengumuman')) isActive = true;
 
-            const mobileSidebar = document.createElement('aside');
-            mobileSidebar.id = 'mobileSidebar';
-            mobileSidebar.className = 'fixed inset-y-0 left-0 w-72 bg-white dark:bg-surface shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 flex flex-col md:hidden';
-            mobileSidebar.innerHTML = `
-                <button onclick="toggleMobileSidebar()" class="absolute top-6 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                    <i class="ph-bold ph-x text-2xl"></i>
-                </button>
-                ${sidebarInnerHtml}
+                const onClickAction = m.id === 'more' ? 'toggleMobileMoreMenu()' : `changeTab('${m.id}')`;
+                
+                bottomNavHtml += `
+                    <button onclick="${onClickAction}" class="flex flex-col items-center justify-center w-full h-full transition-colors ${isActive ? 'text-primary dark:text-indigo-400' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}">
+                        <div class="relative p-1">
+                            <i class="${isActive ? 'ph-fill' : 'ph'} ${m.icon} text-2xl"></i>
+                            ${isActive ? '<span class="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary dark:bg-indigo-400 rounded-full"></span>' : ''}
+                        </div>
+                        <span class="text-[10px] font-medium leading-none mt-0.5 ${isActive ? 'font-bold' : ''}">${m.label}</span>
+                    </button>
+                `;
+            });
+            bottomNav.innerHTML = bottomNavHtml;
+
+            // --- Mobile "More" Menu Overlay (Khusus Admin) ---
+            const moreMenuOverlay = document.createElement('div');
+            moreMenuOverlay.id = 'mobileMoreMenu';
+            moreMenuOverlay.className = 'md:hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden opacity-0 transition-opacity flex items-end justify-center pb-safe';
+            moreMenuOverlay.onclick = (e) => { if(e.target === moreMenuOverlay) window.toggleMobileMoreMenu(); }
+            
+            moreMenuOverlay.innerHTML = `
+                <div class="bg-white dark:bg-surface w-full rounded-t-3xl p-6 shadow-2xl transform translate-y-full transition-transform duration-300" id="moreMenuContent">
+                    <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <button onclick="changeTab('komplain')" class="flex flex-col items-center gap-2 p-3 rounded-2xl ${currentTab==='komplain' ? 'bg-primary/10 text-primary' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">
+                            <i class="ph-fill ph-chat-circle-text text-2xl"></i><span class="text-[10px] font-bold">Komplain</span>
+                        </button>
+                        <button onclick="changeTab('pengumuman')" class="flex flex-col items-center gap-2 p-3 rounded-2xl ${currentTab==='pengumuman' ? 'bg-primary/10 text-primary' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">
+                            <i class="ph-fill ph-megaphone text-2xl"></i><span class="text-[10px] font-bold">Info</span>
+                        </button>
+                        <button onclick="doLogout()" class="flex flex-col items-center gap-2 p-3 rounded-2xl bg-rose-50 dark:bg-red-900/20 text-red-500">
+                            <i class="ph-bold ph-sign-out text-2xl"></i><span class="text-[10px] font-bold">Keluar</span>
+                        </button>
+                    </div>
+                </div>
             `;
 
-            // Main Area
+            // --- 3. MAIN AREA (Content) ---
             const mainArea = document.createElement('main');
-            mainArea.className = 'flex-1 flex flex-col relative overflow-hidden h-[100dvh]'; // Gunakan 100dvh
+            mainArea.className = 'flex-1 flex flex-col relative overflow-hidden h-full min-w-0'; // min-w-0 penting untuk truncate flex children
             
             const isDark = document.documentElement.classList.contains('dark');
             
+            // Topbar: Diubah agar judul di tengah pada mobile, tombol hamburger dihapus.
             const topbar = `
-                <header class="h-20 glass flex items-center justify-between px-4 md:px-6 z-10 shrink-0">
-                    <div class="flex items-center gap-3">
-                        <button onclick="toggleMobileSidebar()" class="md:hidden p-2 -ml-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                            <i class="ph-bold ph-list text-2xl"></i>
-                        </button>
-                        <div>
-                            <h2 class="text-xl md:text-xl font-bold text-slate-800 dark:text-white capitalize">${currentTab.replace('_', ' ')}</h2>
-                            <p class="hidden md:block text-xs text-slate-500 dark:text-slate-400">${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <header class="h-16 md:h-20 glass flex items-center justify-between px-4 md:px-6 z-10 shrink-0">
+                    <div class="flex items-center md:gap-3 w-1/3 md:w-auto">
+                        <!-- Profil Singkat di Mobile Topbar (Hanya User) -->
+                        <div class="md:hidden flex items-center gap-2 text-primary dark:text-indigo-400">
+                            <i class="ph-fill ph-user-circle text-2xl"></i>
+                        </div>
+                        <div class="hidden md:block">
+                            <h2 class="text-xl font-bold text-slate-800 dark:text-white capitalize">${currentTab.replace('_', ' ')}</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                         </div>
                     </div>
-                    <button onclick="toggleTheme()" class="btn-animate p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                        <i id="themeIconMain" class="${isDark ? 'ph-fill ph-sun text-yellow-400' : 'ph-fill ph-moon text-slate-700'} text-xl"></i>
-                    </button>
+                    
+                    <!-- Judul Tengah untuk Mobile -->
+                    <div class="md:hidden w-1/3 flex justify-center">
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-white capitalize">${currentTab.replace('_', ' ')}</h2>
+                    </div>
+
+                    <div class="w-1/3 md:w-auto flex justify-end">
+                        <button onclick="toggleTheme()" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                            <i id="themeIconMain" class="${document.documentElement.classList.contains('dark') ? 'ph-fill ph-sun' : 'ph-fill ph-moon'} text-xl"></i>
+                        </button>
+                    </div>
                 </header>
             `;
 
             const contentWrapper = document.createElement('div');
-            // Menambahkan padding bottom yang lebih besar untuk mobile agar tidak tertutup address bar browser
+            // Menambahkan padding bottom yang spesifik untuk mengakomodasi Bottom Nav di HP (pb-24)
             contentWrapper.className = 'flex-1 overflow-y-auto p-4 pb-24 md:p-8 md:pb-8 custom-scrollbar fade-in relative';
             
             let contentEl = null;
@@ -524,90 +512,91 @@
             mainArea.innerHTML = topbar;
             if(contentEl) contentWrapper.appendChild(contentEl);
             mainArea.appendChild(contentWrapper);
+            if(isAdmin) mainArea.appendChild(moreMenuOverlay);
+            mainArea.appendChild(bottomNav); // Tambahkan bottom nav ke main area
 
             container.appendChild(sidebar);
-            container.appendChild(mobileOverlay);
-            container.appendChild(mobileSidebar);
             container.appendChild(mainArea);
             return container;
         }
 
+        window.toggleMobileMoreMenu = () => {
+            const overlay = document.getElementById('mobileMoreMenu');
+            const content = document.getElementById('moreMenuContent');
+            if(overlay && content) {
+                if(overlay.classList.contains('hidden')) {
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => {
+                        overlay.classList.remove('opacity-0');
+                        content.classList.remove('translate-y-full');
+                    }, 10);
+                } else {
+                    overlay.classList.add('opacity-0');
+                    content.classList.add('translate-y-full');
+                    setTimeout(() => overlay.classList.add('hidden'), 300);
+                }
+            }
+        };
+
         window.changeTab = (tabId) => {
             currentTab = tabId;
-            // Render ulang akan otomatis menutup sidebar mobile karena DOM di-refresh
+            // Tutup menu "more" jika sedang terbuka
+            const overlay = document.getElementById('mobileMoreMenu');
+            if(overlay && !overlay.classList.contains('hidden')) window.toggleMobileMoreMenu();
+
+            if(hasPendingUpdates) {
+                for(let key in pendingStateUpdates) state[key] = pendingStateUpdates[key];
+                pendingStateUpdates = {}; hasPendingUpdates = false;
+                document.getElementById('update-badge')?.classList.remove('show');
+            }
             render();
         }
 
-        window.doLogout = () => {
-            state.loggedInUser = null;
-            currentTab = 'overview';
-            showToast('Berhasil Logout. Sampai jumpa! 👋', 'info');
-            render();
-        }
+        window.doLogout = () => { state.loggedInUser = null; currentTab = 'overview'; showToast('Berhasil Logout. 👋', 'info'); render(); }
 
         // ==========================================
-        // FIREBASE DB ACTIONS (ADMIN)
+        // ADMIN COMPONENTS
         // ==========================================
-        
         function renderAdminOverview() {
             const div = document.createElement('div');
-            const totalKamar = state.kamar.length;
-            const kamarTerisi = state.kamar.filter(k => k.status === 'Terisi').length;
+            const totalKamar = state.kamar.length, kamarTerisi = state.kamar.filter(k => k.status === 'Terisi').length;
             const persentase = totalKamar === 0 ? 0 : Math.round((kamarTerisi / totalKamar) * 100);
-            
             const pendapatan = state.tagihan.filter(t => t.status_bayar === 'Lunas').reduce((sum, t) => sum + t.nominal, 0);
             const komplainPending = state.komplain.filter(k => k.status === 'Pending').length;
 
             div.innerHTML = `
-                <div class="mb-8 fade-in delay-100">
-                    <h3 class="text-2xl font-bold dark:text-white mb-2">Selamat Datang, ${state.loggedInUser.nama}! 👋</h3>
-                    <p class="text-slate-500 dark:text-slate-400">Berikut adalah ringkasan performa kost hari ini.</p>
+                <div class="mb-6 md:mb-8 fade-in delay-100">
+                    <h3 class="text-xl md:text-2xl font-bold dark:text-white mb-1 md:mb-2">Selamat Datang, ${state.loggedInUser.nama.split(' ')[0]}! 👋</h3>
+                    <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">Berikut adalah ringkasan performa kost hari ini.</p>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 fade-in delay-200">
-                    <!-- Card 1: Occupancy -->
-                    <div class="bg-white dark:bg-surface p-5 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
-                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all"></div>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm font-semibold mb-2">Tingkat Keterisian</p>
-                        <h4 class="text-3xl font-extrabold dark:text-white mb-4">${persentase}%</h4>
-                        <div class="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
-                            <div class="bg-primary h-full rounded-full" style="width: ${persentase}%"></div>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-3">${kamarTerisi} dari ${totalKamar} Kamar Terisi</p>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8 fade-in delay-200">
+                    <div class="bg-white dark:bg-surface p-4 md:p-6 rounded-[1rem] md:rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+                        <p class="text-slate-500 dark:text-slate-400 text-[10px] md:text-sm font-semibold mb-1 md:mb-2">Keterisian</p>
+                        <h4 class="text-2xl md:text-3xl font-extrabold dark:text-white mb-2 md:mb-4">${persentase}%</h4>
+                        <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 md:h-2.5 rounded-full overflow-hidden"><div class="bg-primary h-full rounded-full" style="width: ${persentase}%"></div></div>
+                        <p class="text-[10px] md:text-xs text-slate-400 mt-2 md:mt-3">${kamarTerisi}/${totalKamar} Terisi</p>
                     </div>
-
-                    <!-- Card 2: Penghuni -->
-                    <div class="bg-white dark:bg-surface p-5 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm font-semibold mb-1">Total Penghuni</p>
-                                <h4 class="text-3xl font-extrabold dark:text-white">${state.penghuni.length}</h4>
-                            </div>
-                            <div class="p-3 bg-blue-50 dark:bg-blue-500/10 text-primary rounded-xl"><i class="ph-fill ph-users text-2xl"></i></div>
+                    <div class="bg-white dark:bg-surface p-4 md:p-6 rounded-[1rem] md:rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-slate-500 dark:text-slate-400 text-[10px] md:text-sm font-semibold mb-1">Penghuni</p><h4 class="text-2xl md:text-3xl font-extrabold dark:text-white">${state.penghuni.length}</h4></div>
+                            <div class="hidden md:flex p-3 bg-blue-50 dark:bg-blue-500/10 text-primary rounded-xl"><i class="ph-fill ph-users text-2xl"></i></div>
                         </div>
-                        <p class="text-xs text-green-500 font-medium flex items-center gap-1"><i class="ph-bold ph-trend-up"></i> Aktif menyewa</p>
+                        <p class="text-[10px] md:text-xs text-green-500 font-medium flex items-center gap-1 mt-2"><i class="ph-bold ph-trend-up"></i> Aktif menyewa</p>
                     </div>
-
-                    <!-- Card 3: Pendapatan -->
-                    <div class="bg-white dark:bg-surface p-5 md:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm font-semibold mb-1">Pendapatan Diterima</p>
-                                <h4 class="text-2xl font-extrabold text-secondary">${formatRupiah(pendapatan)}</h4>
-                            </div>
-                            <div class="p-3 bg-green-50 dark:bg-green-500/10 text-secondary rounded-xl"><i class="ph-fill ph-wallet text-2xl"></i></div>
+                    <div class="col-span-2 md:col-span-1 bg-white dark:bg-surface p-4 md:p-6 rounded-[1rem] md:rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-slate-500 dark:text-slate-400 text-[10px] md:text-sm font-semibold mb-1">Pendapatan Diterima</p><h4 class="text-xl md:text-2xl font-extrabold text-secondary">${formatRupiah(pendapatan)}</h4></div>
+                            <div class="hidden md:flex p-3 bg-green-50 dark:bg-green-500/10 text-secondary rounded-xl"><i class="ph-fill ph-wallet text-2xl"></i></div>
                         </div>
-                        <p class="text-xs text-slate-400">Total dari tagihan lunas</p>
+                        <p class="text-[10px] md:text-xs text-slate-400 mt-2">Dari tagihan lunas</p>
                     </div>
-
-                    <!-- Card 4: Action Needed -->
-                    <div class="bg-gradient-to-br from-rose-500 to-red-600 p-5 md:p-6 rounded-2xl shadow-lg shadow-red-500/30 text-white flex flex-col justify-between">
-                        <div>
-                            <p class="text-red-100 text-sm font-semibold mb-1">Butuh Tindakan</p>
-                            <h4 class="text-3xl font-extrabold mb-1">${komplainPending}</h4>
-                            <p class="text-sm text-red-100">Komplain belum diselesaikan</p>
+                    <div class="col-span-2 md:col-span-1 bg-gradient-to-br from-rose-500 to-red-600 p-4 md:p-6 rounded-[1rem] md:rounded-2xl shadow-lg shadow-red-500/30 text-white flex flex-col justify-between items-start md:items-stretch">
+                        <div class="flex-1">
+                            <p class="text-red-100 text-[10px] md:text-sm font-semibold mb-1">Butuh Tindakan</p>
+                            <h4 class="text-2xl md:text-3xl font-extrabold mb-1">${komplainPending}</h4>
+                            <p class="text-[10px] md:text-sm text-red-100 mb-3 md:mb-0">Komplain belum diselesaikan</p>
                         </div>
-                        <button onclick="changeTab('komplain')" class="btn-animate mt-4 w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl text-sm font-bold transition">Cek Sekarang</button>
+                        <button onclick="changeTab('komplain')" class="btn-animate w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-lg md:rounded-xl text-[10px] md:text-sm font-bold transition">Cek Sekarang</button>
                     </div>
                 </div>
             `;
@@ -616,45 +605,33 @@
 
         function renderAdminKamar() {
             const div = document.createElement('div');
-            
             let kamarCards = '';
-            // Sorting kamar berdasarkan ID untuk kerapian
-            const sortedKamar = [...state.kamar].sort((a, b) => a.id - b.id);
-
-            sortedKamar.forEach((k, index) => {
+            [...state.kamar].sort((a, b) => a.id - b.id).forEach((k, index) => {
                 const isTerisi = k.status === 'Terisi';
                 const statusColor = isTerisi ? 'bg-rose-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
-                const statusIcon = isTerisi ? 'ph-prohibit' : 'ph-check-circle';
                 
-                const fasArray = k.fasilitas.split(',').map(f => f.trim()).slice(0, 3);
-                let fasBadges = fasArray.map(f => `<span class="px-2 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs rounded-md whitespace-nowrap">${f}</span>`).join('');
-                if(k.fasilitas.split(',').length > 3) fasBadges += `<span class="px-2 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs rounded-md">+ lain</span>`;
-
-                const delay = (index % 4) * 100;
+                // Truncate fasilitas for mobile
+                const fasArray = k.fasilitas.split(',').map(f => f.trim()).slice(0, 2);
+                let fasBadges = fasArray.map(f => `<span class="px-2 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[10px] md:text-xs rounded-md whitespace-nowrap">${f}</span>`).join('');
+                if(k.fasilitas.split(',').length > 2) fasBadges += `<span class="px-2 py-1 bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-[10px] md:text-xs rounded-md">+ lain</span>`;
 
                 kamarCards += `
-                    <div class="bg-white dark:bg-surface rounded-2xl border border-slate-200 dark:border-slate-700 p-5 flex flex-col justify-between card-hover fade-in" style="animation-delay: ${delay}ms;">
+                    <div class="bg-white dark:bg-surface rounded-2xl border border-slate-200 dark:border-slate-700 p-4 md:p-5 flex flex-col justify-between card-hover fade-in" style="animation-delay: ${(index % 4) * 100}ms;">
                         <div>
                             <div class="flex justify-between items-start mb-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center font-bold text-xl shrink-0"><i class="ph-fill ph-door"></i></div>
-                                    <div>
-                                        <h3 class="text-xl font-bold dark:text-white">Kmr ${k.id}</h3>
-                                        <p class="text-xs text-slate-500">Lantai ${k.lantai} • ${k.ukuran}m²</p>
-                                    </div>
+                                    <div class="w-10 h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center font-bold text-lg md:text-xl shrink-0"><i class="ph-fill ph-door"></i></div>
+                                    <div><h3 class="text-base md:text-xl font-bold dark:text-white leading-tight">Kmr ${k.id}</h3><p class="text-[10px] md:text-xs text-slate-500">Lt ${k.lantai} • ${k.ukuran}m²</p></div>
                                 </div>
-                                <span class="flex items-center gap-1.5 px-2.5 py-1 border rounded-lg text-xs font-bold ${statusColor} shrink-0"><i class="ph-bold ${statusIcon}"></i> ${k.status}</span>
+                                <span class="flex items-center gap-1 px-2 py-1 border rounded-lg text-[10px] md:text-xs font-bold ${statusColor} shrink-0"><i class="ph-bold ${isTerisi ? 'ph-prohibit' : 'ph-check-circle'}"></i> ${k.status}</span>
                             </div>
-                            <div class="mb-5">
-                                <p class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wide">Fasilitas Utama</p>
-                                <div class="flex flex-wrap gap-1.5">${fasBadges}</div>
-                            </div>
+                            <div class="mb-4 md:mb-5"><div class="flex flex-wrap gap-1.5">${fasBadges}</div></div>
                         </div>
-                        <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                            <p class="font-bold text-primary dark:text-indigo-400 text-lg">${formatRupiah(k.harga)}<span class="text-xs text-slate-400 font-normal">/bln</span></p>
+                        <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                            <p class="font-bold text-primary dark:text-indigo-400 text-sm md:text-lg">${formatRupiah(k.harga)}<span class="text-[10px] md:text-xs text-slate-400 font-normal">/bln</span></p>
                             <div class="flex gap-1.5">
-                                <button onclick="ubahStatusKamar(${k.id})" class="btn-animate p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg transition" title="Ubah Status"><i class="ph-bold ph-arrows-left-right"></i></button>
-                                <button onclick="hapusKamar(${k.id})" class="btn-animate p-2 bg-rose-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 rounded-lg transition" title="Hapus Kamar"><i class="ph-bold ph-trash"></i></button>
+                                <button onclick="ubahStatusKamar(${k.id})" class="btn-animate p-1.5 md:p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg transition" title="Ubah Status"><i class="ph-bold ph-arrows-left-right"></i></button>
+                                <button onclick="hapusKamar(${k.id})" class="btn-animate p-1.5 md:p-2 bg-rose-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 rounded-lg transition"><i class="ph-bold ph-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -662,570 +639,332 @@
             });
 
             div.innerHTML = `
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 fade-in">
-                    <div>
-                        <h3 class="text-xl font-bold dark:text-white">Manajemen Kamar</h3>
-                        <p class="text-sm text-slate-500">Kelola data dan status seluruh kamar kost.</p>
-                    </div>
-                    <button onclick="document.getElementById('modalTambahKamar').classList.remove('hidden')" class="btn-animate w-full md:w-auto bg-primary hover:bg-primary_hover text-white px-5 py-3 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg shadow-primary/30">
-                        <i class="ph-bold ph-plus"></i> Tambah Kamar
-                    </button>
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-4 md:mb-6 gap-3 md:gap-4 fade-in">
+                    <div><h3 class="text-lg md:text-xl font-bold dark:text-white">Manajemen Kamar</h3></div>
+                    <button onclick="document.getElementById('modalTambahKamar').classList.remove('hidden')" class="btn-animate w-full sm:w-auto bg-primary text-white px-4 py-2.5 md:px-5 md:py-3 rounded-xl text-sm md:text-base font-bold flex justify-center gap-2 shadow-lg shadow-primary/30"><i class="ph-bold ph-plus text-lg"></i> Tambah Kamar</button>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-                    ${kamarCards || '<p class="col-span-full text-center text-slate-500 py-10">Belum ada data kamar.</p>'}
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-6">${kamarCards || '<p class="col-span-full text-center text-slate-500 py-10 text-sm">Belum ada kamar.</p>'}</div>
 
                 <!-- MODAL TAMBAH KAMAR -->
-                <div id="modalTambahKamar" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-                    <div class="bg-white dark:bg-surface p-6 md:p-8 rounded-3xl shadow-2xl w-full max-w-lg border border-slate-200 dark:border-slate-700 modal-fade-in max-h-[90vh] overflow-y-auto">
+                <div id="modalTambahKamar" class="hidden fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-0 md:p-4 pb-safe">
+                    <div class="bg-white dark:bg-surface p-6 md:p-8 rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-lg border-t md:border border-slate-200 dark:border-slate-700 modal-fade-in max-h-[85vh] overflow-y-auto transform transition-transform">
                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold dark:text-white flex items-center gap-2"><i class="ph-fill ph-door text-primary"></i> Tambah Kamar</h3>
+                            <h3 class="text-lg md:text-xl font-bold dark:text-white flex gap-2 items-center"><i class="ph-fill ph-door text-primary text-2xl"></i> Tambah Kamar</h3>
                             <button onclick="document.getElementById('modalTambahKamar').classList.add('hidden')" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:text-white"><i class="ph-bold ph-x"></i></button>
                         </div>
                         <form id="formTambahKamar" class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><label class="block text-sm font-medium mb-1 dark:text-slate-300">No Kamar</label><input type="number" id="k_id" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
-                                <div><label class="block text-sm font-medium mb-1 dark:text-slate-300">Lantai</label><input type="number" id="k_lantai" required min="1" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
+                            <div class="grid grid-cols-2 gap-3 md:gap-4">
+                                <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">No Kamar</label><input type="number" id="k_id" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white text-sm"></div>
+                                <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">Lantai</label><input type="number" id="k_lantai" required min="1" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white text-sm"></div>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><label class="block text-sm font-medium mb-1 dark:text-slate-300">Harga (Rp)</label><input type="number" id="k_harga" required min="0" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
-                                <div><label class="block text-sm font-medium mb-1 dark:text-slate-300">Ukuran (m²)</label><input type="number" id="k_ukuran" required min="1" placeholder="Misal: 12" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
+                            <div class="grid grid-cols-2 gap-3 md:gap-4">
+                                <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">Harga (Rp)</label><input type="number" id="k_harga" required min="0" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white text-sm"></div>
+                                <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">Ukuran (m²)</label><input type="number" id="k_ukuran" required min="1" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white text-sm"></div>
                             </div>
-                            <div><label class="block text-sm font-medium mb-1 dark:text-slate-300">Fasilitas (Pisahkan koma)</label><textarea id="k_fasilitas" required placeholder="Kasur, Lemari, AC..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white resize-none h-20"></textarea></div>
-                            
-                            <button type="submit" class="btn-animate w-full bg-primary text-white py-3.5 rounded-xl font-bold mt-4 shadow-lg shadow-primary/30">Simpan Kamar</button>
+                            <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">Fasilitas (Koma)</label><textarea id="k_fasilitas" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white resize-none h-20 text-sm"></textarea></div>
+                            <button type="submit" class="btn-animate w-full bg-primary text-white py-3.5 rounded-xl font-bold mt-2 shadow-lg shadow-primary/30">Simpan Kamar</button>
                         </form>
                     </div>
                 </div>
             `;
 
             setTimeout(() => {
-                div.querySelector('#formTambahKamar').addEventListener('submit', async (e) => {
+                div.querySelector('#formTambahKamar').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const id = parseInt(document.getElementById('k_id').value);
-                    if (state.kamar.find(k => k.id === id)) return showToast('Nomor Kamar sudah digunakan!', 'error');
-                    
-                    const newKamar = {
-                        id,
-                        fasilitas: document.getElementById('k_fasilitas').value,
-                        lantai: parseInt(document.getElementById('k_lantai').value),
-                        ukuran: parseFloat(document.getElementById('k_ukuran').value), 
-                        harga: parseInt(document.getElementById('k_harga').value),
-                        status: 'Tersedia'
-                    };
-
-                    try {
-                        await setDoc(getDocRef('kamar', id), newKamar);
+                    runLocalAction(async () => {
+                        const id = parseInt(document.getElementById('k_id').value);
+                        if (state.kamar.find(k => k.id === id)) return showToast('Nomor Kamar sudah digunakan!', 'error');
+                        await setDoc(getDocRef('kamar', id), {
+                            id, fasilitas: document.getElementById('k_fasilitas').value, lantai: parseInt(document.getElementById('k_lantai').value), ukuran: parseFloat(document.getElementById('k_ukuran').value), harga: parseInt(document.getElementById('k_harga').value), status: 'Tersedia'
+                        });
                         document.getElementById('modalTambahKamar').classList.add('hidden');
                         showToast('Kamar berhasil ditambahkan!');
-                    } catch (error) {
-                        console.error(error);
-                        showToast('Gagal menyimpan kamar', 'error');
-                    }
+                    });
                 });
             }, 0);
 
             return div;
         }
 
-        window.ubahStatusKamar = async (id) => {
-            let k = state.kamar.find(x => x.id === id);
-            if (!k) return;
-            const newStatus = k.status === 'Tersedia' ? 'Terisi' : 'Tersedia';
-            
-            try {
-                await updateDoc(getDocRef('kamar', id), { status: newStatus });
-                showToast(`Status Kamar ${id} sukses diubah!`);
-            } catch (error) {
-                console.error(error);
-                showToast('Gagal mengubah status kamar', 'error');
-            }
+        window.ubahStatusKamar = (id) => {
+            runLocalAction(async () => {
+                let k = state.kamar.find(x => x.id === id);
+                if (k) await updateDoc(getDocRef('kamar', id), { status: k.status === 'Tersedia' ? 'Terisi' : 'Tersedia' });
+            });
         };
 
-        window.hapusKamar = async (id) => {
-            if(state.sewa.find(s => s.id_kamar === id)) return showToast('Tidak bisa dihapus: Kamar masih tercatat di riwayat sewa penghuni.', 'error');
-            if(confirm(`Yakin ingin menghapus Kamar ${id} secara permanen?`)) {
-                try {
-                    await deleteDoc(getDocRef('kamar', id));
-                    showToast('Kamar berhasil dihapus!', 'success');
-                } catch (error) {
-                    console.error(error);
-                    showToast('Gagal menghapus kamar', 'error');
-                }
-            }
+        window.hapusKamar = (id) => {
+            if(state.sewa.find(s => s.id_kamar === id)) return showToast('Gagal: Kamar ada di riwayat sewa.', 'error');
+            if(confirm(`Yakin hapus Kamar ${id}?`)) runLocalAction(async () => { await deleteDoc(getDocRef('kamar', id)); showToast('Kamar dihapus.'); });
         };
 
         window.showModalPindahKamar = (idPenghuni) => {
             const p = state.penghuni.find(x => x.id === idPenghuni);
             const kamarTersedia = state.kamar.filter(k => k.status === 'Tersedia');
+            if(kamarTersedia.length === 0) return showToast('Tidak ada kamar kosong!', 'error');
 
-            if(kamarTersedia.length === 0) {
-                return showToast('Waduh, tidak ada kamar kosong saat ini!', 'error');
-            }
-
-            let optHtml = kamarTersedia.map(k => `<option value="${k.id}">Kamar ${k.id} (Lt.${k.lantai}) - ${formatRupiah(k.harga)}</option>`).join('');
-
-            const modalHtml = `
-                <div id="customModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 p-4">
-                    <div class="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-md modal-fade-in">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="p-2.5 bg-blue-100 dark:bg-blue-500/20 text-primary rounded-xl"><i class="ph-bold ph-truck text-2xl"></i></div>
-                            <h3 class="text-2xl font-bold dark:text-white">Pindah Kamar</h3>
-                        </div>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Pilih kamar tujuan baru untuk penghuni <b>${p.nama || p.username}</b>.</p>
-                        
-                        <label class="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Pilih Kamar Tersedia</label>
-                        <select id="selectKamarBaru" class="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 outline-none focus:ring-2 focus:ring-primary dark:text-white appearance-none cursor-pointer mb-8">
-                            ${optHtml}
-                        </select>
-                        
+            let optHtml = kamarTersedia.map(k => `<option value="${k.id}">Kamar ${k.id} - ${formatRupiah(k.harga)}</option>`).join('');
+            document.body.insertAdjacentHTML('beforeend', `
+                <div id="customModal" class="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity p-0 md:p-4 pb-safe">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-md modal-fade-in border-t md:border border-slate-200 dark:border-slate-700">
+                        <h3 class="text-xl font-bold dark:text-white mb-2"><i class="ph-bold ph-truck text-primary"></i> Pindah Kamar</h3>
+                        <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-6">Pilih kamar baru untuk <b>${p.nama || p.username}</b>.</p>
+                        <select id="selectKamarBaru" class="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 outline-none dark:text-white mb-6 text-sm">${optHtml}</select>
                         <div class="flex gap-3 justify-end">
-                            <button onclick="closeModal()" class="btn-animate px-5 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 dark:text-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600">Batal</button>
-                            <button onclick="prosesPindahKamar(${idPenghuni})" class="btn-animate px-6 py-3 rounded-xl font-bold text-white bg-primary hover:bg-blue-600 flex items-center gap-2"><i class="ph-bold ph-check"></i> Konfirmasi</button>
+                            <button onclick="closeModal()" class="w-1/2 md:w-auto px-5 py-3 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:text-white text-sm">Batal</button>
+                            <button onclick="prosesPindahKamar(${idPenghuni})" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold bg-primary text-white hover:bg-blue-600 text-sm">Konfirmasi</button>
                         </div>
                     </div>
                 </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            `);
         };
 
-        window.prosesPindahKamar = async (idPenghuni) => {
-            const el = document.getElementById('selectKamarBaru');
-            if(!el) return;
-            const newKamarId = parseInt(el.value);
-            const kamarLamaId = getAssignedRoom(idPenghuni);
-            
-            try {
-                if(kamarLamaId !== '-') {
-                    await updateDoc(getDocRef('kamar', kamarLamaId), { status: 'Tersedia' });
-                }
+        window.closeModal = () => { const m = document.getElementById('customModal'); if(m) { m.classList.remove('modal-fade-in'); m.style.opacity = '0'; setTimeout(() => m.remove(), 300); } };
+
+        window.prosesPindahKamar = (idPenghuni) => {
+            runLocalAction(async () => {
+                const el = document.getElementById('selectKamarBaru'); if(!el) return;
+                const newKamarId = parseInt(el.value), kamarLamaId = getAssignedRoom(idPenghuni);
+                
+                if(kamarLamaId !== '-') await updateDoc(getDocRef('kamar', kamarLamaId), { status: 'Tersedia' });
                 await updateDoc(getDocRef('kamar', newKamarId), { status: 'Terisi' });
 
-                const sortedSewa = [...state.sewa].sort((a, b) => b.id - a.id);
-                const userSewa = sortedSewa.find(s => s.id_penghuni === idPenghuni);
-                
-                if(userSewa) {
-                    await updateDoc(getDocRef('sewa', userSewa.id), { id_kamar: newKamarId });
-                } else {
-                    const newSewaId = Date.now();
-                    await setDoc(getDocRef('sewa', newSewaId), { id: newSewaId, id_penghuni: idPenghuni, id_kamar: newKamarId });
-                }
-
-                closeModal();
-                showToast(`Sip! Penghuni berhasil pindah ke Kamar ${newKamarId} 🚚`, 'success');
-            } catch (error) {
-                console.error(error);
-                showToast('Gagal memproses pindah kamar', 'error');
-            }
+                const userSewa = [...state.sewa].sort((a, b) => b.id - a.id).find(s => s.id_penghuni === idPenghuni);
+                if(userSewa) await updateDoc(getDocRef('sewa', userSewa.id), { id_kamar: newKamarId });
+                else { const newId = Date.now(); await setDoc(getDocRef('sewa', newId), { id: newId, id_penghuni: idPenghuni, id_kamar: newKamarId }); }
+                closeModal(); showToast(`Pindah ke Kamar ${newKamarId}`, 'success');
+            });
         };
 
         function renderAdminPenghuni() {
             const div = document.createElement('div');
-            
             let tbody = '';
             state.penghuni.forEach(p => {
                 const kamarUser = getAssignedRoom(p.id);
-                const isKamarAktif = kamarUser !== '-';
                 tbody += `
                     <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                        <td class="p-4 font-mono text-xs text-slate-400">P-${p.id}</td>
-                        <td class="p-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm uppercase shrink-0">${p.username.charAt(0)}</div>
-                                <div>
-                                    <p class="font-bold text-slate-800 dark:text-slate-200 capitalize whitespace-normal">${p.nama || p.username}</p>
-                                    <p class="text-xs text-slate-500">@${p.username}</p>
-                                </div>
+                        <td class="p-3 md:p-4">
+                            <div class="flex items-center gap-2 md:gap-3">
+                                <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs md:text-sm uppercase shrink-0">${p.username.charAt(0)}</div>
+                                <div><p class="font-bold text-slate-800 dark:text-slate-200 capitalize text-sm whitespace-normal">${p.nama || p.username}</p><p class="text-[10px] text-slate-500">@${p.username}</p></div>
                             </div>
                         </td>
-                        <td class="p-4 text-slate-600 dark:text-slate-300 font-mono text-sm">${p.no_hp}</td>
-                        <td class="p-4">
-                            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700 font-semibold text-sm whitespace-nowrap">
-                                ${isKamarAktif ? `Kmr ${kamarUser}` : 'Kosong'}
-                            </span>
-                        </td>
-                        <td class="p-4 flex gap-2">
-                            <button onclick="showModalPindahKamar(${p.id})" class="btn-animate px-3 py-1.5 bg-blue-50 dark:bg-blue-500/10 text-primary border border-blue-100 dark:border-blue-500/20 rounded-lg text-sm font-semibold hover:bg-primary hover:text-white transition">Pindah</button>
-                            <button onclick="hapusPenghuni(${p.id})" class="btn-animate px-3 py-1.5 bg-rose-50 dark:bg-red-500/10 text-red-600 border border-rose-100 dark:border-red-500/20 rounded-lg text-sm font-semibold hover:bg-red-500 hover:text-white transition whitespace-nowrap">Check-Out</button>
+                        <td class="p-3 md:p-4 text-slate-600 dark:text-slate-300 font-mono text-xs md:text-sm">${p.no_hp}</td>
+                        <td class="p-3 md:p-4"><span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700 font-semibold text-[10px] md:text-xs whitespace-nowrap">${kamarUser !== '-' ? `Kmr ${kamarUser}` : 'Kosong'}</span></td>
+                        <td class="p-3 md:p-4 flex gap-1.5 md:gap-2">
+                            <button onclick="showModalPindahKamar(${p.id})" class="btn-animate p-2 md:px-3 md:py-1.5 bg-blue-50 text-primary border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 rounded-lg text-xs font-semibold" title="Pindah"><i class="ph-bold ph-truck md:hidden"></i><span class="hidden md:inline">Pindah</span></button>
+                            <button onclick="hapusPenghuni(${p.id})" class="btn-animate p-2 md:px-3 md:py-1.5 bg-rose-50 text-red-600 border border-rose-100 dark:bg-red-500/10 dark:border-red-500/20 rounded-lg text-xs font-semibold whitespace-nowrap" title="Check-Out"><i class="ph-bold ph-sign-out md:hidden"></i><span class="hidden md:inline">Check-Out</span></button>
                         </td>
                     </tr>
                 `;
             });
 
-            if(tbody === '') tbody = '<tr><td colspan="5" class="p-8 text-center text-slate-500">Belum ada penghuni aktif.</td></tr>';
-
             const kamarTersedia = state.kamar.filter(k => k.status === 'Tersedia');
-            let optionsKamar = kamarTersedia.map(k => `<option value="${k.id}">Kamar ${k.id} - ${formatRupiah(k.harga)}</option>`).join('');
-            if(optionsKamar === '') optionsKamar = '<option disabled selected>⚠️ Waduh, semua kamar penuh!</option>';
+            let optionsKamar = kamarTersedia.map(k => `<option value="${k.id}">Kamar ${k.id} - ${formatRupiah(k.harga)}</option>`).join('') || '<option disabled selected>⚠️ Waduh, semua kamar penuh!</option>';
 
             div.innerHTML = `
-                <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 fade-in delay-100">
-                    <!-- Tabel Penghuni -->
-                    <div class="lg:w-2/3 bg-white dark:bg-surface rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col h-[500px] lg:h-[calc(100vh-140px)]">
-                        <div class="p-4 md:p-5 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-slate-50/50 dark:bg-slate-800/30">
-                            <h3 class="font-bold text-lg dark:text-white flex items-center gap-2"><i class="ph-fill ph-users text-primary"></i> Data Penghuni</h3>
-                            <div class="relative w-full sm:w-auto">
-                                <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input type="text" placeholder="Cari nama..." class="w-full sm:w-48 pl-9 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm outline-none focus:border-primary transition-all sm:focus:w-64">
+                <div class="flex flex-col lg:flex-row gap-4 md:gap-6 fade-in delay-100">
+                    <!-- Form Pendaftaran (Di Atas pada Mobile, Kanan pada Desktop) -->
+                    <div class="w-full lg:w-1/3 bg-white dark:bg-surface p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 h-fit order-1 lg:order-2">
+                        <div class="flex items-center gap-2 md:gap-3 mb-4 md:mb-6 pb-3 border-b border-slate-100 dark:border-slate-800">
+                            <div class="p-2 md:p-2.5 bg-green-100 dark:bg-green-500/20 text-secondary rounded-xl"><i class="ph-bold ph-user-plus text-lg md:text-xl"></i></div>
+                            <h3 class="font-bold text-base md:text-lg dark:text-white">Daftar Penghuni</h3>
+                        </div>
+                        <form id="formTambahPenghuni" class="space-y-3 md:space-y-4">
+                            <div><input type="text" id="p_nama" required placeholder="Nama Lengkap" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-primary outline-none dark:text-white text-sm"></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input type="text" id="p_user" required placeholder="Username" class="w-full px-4 py-2.5 rounded-xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none dark:text-white text-sm">
+                                <input type="password" id="p_pass" required placeholder="Password" class="w-full px-4 py-2.5 rounded-xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none dark:text-white text-sm">
                             </div>
-                        </div>
-                        <div class="overflow-y-auto overflow-x-auto custom-scrollbar flex-1 p-0">
-                            <table class="w-full text-left whitespace-nowrap">
-                                <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 sticky top-0 backdrop-blur-sm z-10">
-                                    <tr><th class="p-4 text-xs font-semibold uppercase tracking-wide">ID</th><th class="p-4 text-xs font-semibold uppercase tracking-wide">Profil</th><th class="p-4 text-xs font-semibold uppercase tracking-wide">Kontak</th><th class="p-4 text-xs font-semibold uppercase tracking-wide">Kamar</th><th class="p-4 text-xs font-semibold uppercase tracking-wide">Aksi</th></tr>
-                                </thead>
-                                <tbody>${tbody}</tbody>
-                            </table>
-                        </div>
+                            <input type="tel" id="p_hp" required placeholder="No. WhatsApp" class="w-full px-4 py-2.5 rounded-xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none dark:text-white text-sm">
+                            <select id="p_kamar" required class="w-full px-4 py-2.5 rounded-xl border dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none dark:text-white cursor-pointer text-sm">${optionsKamar}</select>
+                            <button type="submit" class="btn-animate w-full bg-secondary text-white py-3 md:py-3.5 rounded-xl text-sm font-bold flex justify-center gap-2 shadow-lg shadow-secondary/30 mt-2">Registrasi</button>
+                        </form>
                     </div>
 
-                    <!-- Form Pendaftaran -->
-                    <div class="lg:w-1/3 bg-white dark:bg-surface p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 lg:sticky lg:top-0 h-fit">
-                        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div class="p-2.5 bg-green-100 dark:bg-green-500/20 text-secondary rounded-xl"><i class="ph-bold ph-user-plus text-xl"></i></div>
-                            <h3 class="font-bold text-lg dark:text-white">Daftarkan Penghuni</h3>
+                    <!-- Tabel Penghuni (Di Bawah pada Mobile, Kiri pada Desktop) -->
+                    <div class="w-full lg:w-2/3 bg-white dark:bg-surface rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col h-[400px] md:h-[500px] lg:h-[calc(100vh-140px)] order-2 lg:order-1">
+                        <div class="p-3 md:p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between bg-slate-50/50 dark:bg-slate-800/30">
+                            <h3 class="font-bold text-base md:text-lg dark:text-white flex items-center gap-2"><i class="ph-fill ph-users text-primary"></i> Data Penghuni</h3>
                         </div>
-                        
-                        <form id="formTambahPenghuni" class="space-y-4">
-                            <div><label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Nama Lengkap</label>
-                            <input type="text" id="p_nama" required placeholder="Budi Santoso" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
-                            
-                            <div class="grid grid-cols-2 gap-3">
-                                <div><label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Username</label>
-                                <input type="text" id="p_user" required placeholder="budi123" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
-                                
-                                <div><label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Password</label>
-                                <input type="password" id="p_pass" required placeholder="••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
-                            </div>
-                            
-                            <div><label class="block text-sm font-medium mb-1.5 dark:text-slate-300">No. WhatsApp</label>
-                            <input type="tel" id="p_hp" required placeholder="08..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Alokasikan ke Kamar</label>
-                                <select id="p_kamar" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:ring-2 focus:ring-primary dark:text-white appearance-none cursor-pointer">
-                                    ${optionsKamar}
-                                </select>
-                            </div>
-                            
-                            <button type="submit" class="btn-animate w-full mt-2 bg-secondary text-white px-6 py-3.5 rounded-xl font-bold flex justify-center items-center gap-2 shadow-lg shadow-secondary/30">
-                                <i class="ph-bold ph-check"></i> Registrasi
-                            </button>
-                        </form>
+                        <div class="w-full overflow-x-auto custom-scrollbar flex-1 p-0">
+                            <table class="w-full text-left whitespace-nowrap min-w-[500px]">
+                                <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 sticky top-0 backdrop-blur-sm z-10"><tr><th class="p-3 md:p-4 text-[10px] md:text-xs uppercase tracking-wide font-semibold">Profil</th><th class="p-3 md:p-4 text-[10px] md:text-xs uppercase tracking-wide font-semibold">Kontak</th><th class="p-3 md:p-4 text-[10px] md:text-xs uppercase tracking-wide font-semibold">Kamar</th><th class="p-3 md:p-4 text-[10px] md:text-xs uppercase tracking-wide font-semibold">Aksi</th></tr></thead>
+                                <tbody>${tbody || '<tr><td colspan="4" class="p-8 text-center text-slate-500 text-sm">Belum ada penghuni aktif.</td></tr>'}</tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             `;
 
             setTimeout(() => {
-                div.querySelector('#formTambahPenghuni').addEventListener('submit', async (e) => {
+                div.querySelector('#formTambahPenghuni').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const roomIdSelect = document.getElementById('p_kamar').value;
-                    if(!roomIdSelect || roomIdSelect.startsWith('⚠️')) return showToast('Pilih kamar yang kosong dulu!', 'error');
-                    
-                    const u = document.getElementById('p_user').value.trim();
-                    if(state.penghuni.find(p => p.username === u)) return showToast('Username sudah dipakai orang lain!', 'error');
+                    runLocalAction(async () => {
+                        const roomIdSelect = document.getElementById('p_kamar').value;
+                        if(!roomIdSelect || roomIdSelect.startsWith('⚠️')) return showToast('Pilih kamar kosong!', 'error');
+                        const u = document.getElementById('p_user').value.trim();
+                        if(state.penghuni.find(p => p.username === u)) return showToast('Username dipakai!', 'error');
 
-                    const roomId = parseInt(roomIdSelect);
-                    const kamar = state.kamar.find(k => k.id === roomId);
-                    
-                    try {
-                        const newId = Date.now(); 
+                        const roomId = parseInt(roomIdSelect), kamar = state.kamar.find(k => k.id === roomId), newId = Date.now(); 
                         
-                        await setDoc(getDocRef('penghuni', newId), {
-                            id: newId,
-                            username: u,
-                            nama: document.getElementById('p_nama').value,
-                            password: document.getElementById('p_pass').value,
-                            no_hp: document.getElementById('p_hp').value,
-                            tgl_masuk: new Date().toISOString().split('T')[0]
-                        });
-
+                        await setDoc(getDocRef('penghuni', newId), { id: newId, username: u, nama: document.getElementById('p_nama').value, password: document.getElementById('p_pass').value, no_hp: document.getElementById('p_hp').value, tgl_masuk: new Date().toISOString().split('T')[0] });
                         await updateDoc(getDocRef('kamar', roomId), { status: 'Terisi' });
+                        await setDoc(getDocRef('sewa', newId+1), { id: newId+1, id_penghuni: newId, id_kamar: roomId });
+                        await setDoc(getDocRef('tagihan', newId+2), { id: newId+2, id_penghuni: newId, id_kamar: roomId, nominal: kamar.harga, status_bayar: 'Belum Lunas', metode: null, tanggal: new Date().toISOString().split('T')[0] });
                         
-                        const sewaId = Date.now() + 1;
-                        await setDoc(getDocRef('sewa', sewaId), { id: sewaId, id_penghuni: newId, id_kamar: roomId });
-                        
-                        const tagihanId = Date.now() + 2;
-                        await setDoc(getDocRef('tagihan', tagihanId), {
-                            id: tagihanId, id_penghuni: newId, id_kamar: roomId, nominal: kamar.harga, status_bayar: 'Belum Lunas', metode: null, tanggal: new Date().toISOString().split('T')[0]
-                        });
-
-                        showToast('Penghuni berhasil check-in & tersimpan ke database!');
-                    } catch (error) {
-                        console.error(error);
-                        showToast('Gagal mendaftarkan penghuni', 'error');
-                    }
+                        showToast('Penghuni berhasil check-in!');
+                        document.getElementById('formTambahPenghuni').reset();
+                    });
                 });
             }, 0);
 
             return div;
         }
 
-        window.hapusPenghuni = async (id) => {
+        window.hapusPenghuni = (id) => {
             const p = state.penghuni.find(x => x.id === id);
-            if(confirm(`Yakin ingin melakukan Check-Out dan hapus permanen data ${p.nama || p.username}? Seluruh tagihan dan komplain terkait akan ikut terhapus.`)) {
-                try {
+            if(confirm(`Check-Out dan hapus data ${p.nama}?`)) {
+                runLocalAction(async () => {
                     const kamarId = getAssignedRoom(id);
-                    if(kamarId !== '-') {
-                        await updateDoc(getDocRef('kamar', kamarId), { status: 'Tersedia' });
-                    }
-                    
-                    const userTagihan = state.tagihan.filter(t => t.id_penghuni === id);
-                    for (let t of userTagihan) await deleteDoc(getDocRef('tagihan', t.id));
-                    
-                    const userKomplain = state.komplain.filter(k => k.id_penghuni === id);
-                    for (let k of userKomplain) await deleteDoc(getDocRef('komplain', k.id));
-                    
-                    const userSewa = state.sewa.filter(s => s.id_penghuni === id);
-                    for (let s of userSewa) await deleteDoc(getDocRef('sewa', s.id));
-                    
+                    if(kamarId !== '-') await updateDoc(getDocRef('kamar', kamarId), { status: 'Tersedia' });
+                    state.tagihan.filter(t => t.id_penghuni === id).forEach(async t => await deleteDoc(getDocRef('tagihan', t.id)));
+                    state.komplain.filter(k => k.id_penghuni === id).forEach(async k => await deleteDoc(getDocRef('komplain', k.id)));
+                    state.sewa.filter(s => s.id_penghuni === id).forEach(async s => await deleteDoc(getDocRef('sewa', s.id)));
                     await deleteDoc(getDocRef('penghuni', id));
-                    
-                    showToast(`Data ${p.nama || p.username} sukses dibersihkan!`, 'success');
-                } catch (error) {
-                    console.error(error);
-                    showToast('Gagal menghapus penghuni', 'error');
-                }
+                    showToast('Data dibersihkan!');
+                });
             }
         };
 
         function renderAdminTagihan() {
             const div = document.createElement('div');
-            
             const renderGroup = (status) => {
                 const filtered = state.tagihan.filter(t => t.status_bayar === status);
-                if(filtered.length === 0) return `<div class="p-8 text-center text-slate-400 italic bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 m-4">Tidak ada tagihan dengan status ini.</div>`;
+                if(filtered.length === 0) return `<div class="p-6 md:p-8 text-center text-slate-400 italic bg-slate-50 dark:bg-slate-800/50 rounded-xl border-dashed border border-slate-200 m-3 md:m-4 text-xs md:text-sm">Tidak ada data.</div>`;
                 
                 let html = '<div class="divide-y divide-slate-100 dark:divide-slate-800">';
                 filtered.forEach(t => {
                     const p = state.penghuni.find(x => x.id === t.id_penghuni) || {};
-                    let actionBtn = status !== 'Lunas' ? `<button onclick="konfirmasiTagihan(${t.id})" class="btn-animate px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm whitespace-nowrap w-full md:w-auto mt-3 md:mt-0">Verifikasi Lunas</button>` : `<span class="text-green-500 font-semibold text-sm flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Selesai</span>`;
-                    
+                    let actionBtn = status !== 'Lunas' ? `<button onclick="konfirmasiTagihan(${t.id})" class="btn-animate px-3 py-2 md:px-4 md:py-2 bg-primary text-white rounded-lg text-xs md:text-sm font-bold shadow-sm mt-3 sm:mt-0 w-full sm:w-auto">Verifikasi</button>` : `<span class="text-green-500 font-semibold text-xs md:text-sm flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Selesai</span>`;
                     html += `
-                        <div class="p-5 flex flex-col md:flex-row justify-between md:items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 font-mono text-xs shadow-inner shrink-0">INV<br>${String(t.id).substring(0,4)}</div>
-                                <div>
-                                    <p class="font-bold text-slate-800 dark:text-slate-200 break-words">${p.nama || p.username || 'User Dihapus'} <span class="text-xs font-normal text-slate-400 ml-2 whitespace-nowrap">Kmr ${getAssignedRoom(t.id_penghuni)}</span></p>
-                                    <p class="text-sm text-slate-500">Tgl: ${t.tanggal} <br class="md:hidden"/> <span class="hidden md:inline">•</span> ${t.metode || 'Belum bayar'}</p>
+                        <div class="p-4 md:p-5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 md:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
+                            <div class="flex items-center gap-3 md:gap-4">
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-500 font-mono text-[10px] md:text-xs shrink-0">INV<br>${String(t.id).substring(0,3)}</div>
+                                <div class="min-w-0">
+                                    <p class="font-bold dark:text-white text-sm md:text-base truncate">${p.nama || 'User Dihapus'} <span class="text-[10px] text-slate-400 ml-1 whitespace-nowrap">Kmr ${getAssignedRoom(t.id_penghuni)}</span></p>
+                                    <p class="text-[10px] md:text-xs text-slate-500 truncate">${t.tanggal} • ${t.metode || '-'}</p>
                                 </div>
                             </div>
-                            <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 justify-between w-full md:w-auto border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-800 text-right md:text-left">
-                                <p class="font-bold text-lg dark:text-white">${formatRupiah(t.nominal)}</p>
+                            <div class="flex flex-row sm:flex-col lg:flex-row items-center sm:items-end lg:items-center gap-2 md:gap-6 justify-between border-t sm:border-none pt-3 sm:pt-0 border-slate-100 dark:border-slate-800">
+                                <p class="font-bold text-base md:text-lg dark:text-white">${formatRupiah(t.nominal)}</p>
                                 ${actionBtn}
                             </div>
                         </div>
                     `;
                 });
-                html += '</div>';
-                return html;
+                return html + '</div>';
             };
 
             div.innerHTML = `
-                <div class="mb-6 fade-in delay-100">
-                    <h3 class="text-xl font-bold dark:text-white">Arus Kas & Tagihan</h3>
-                    <p class="text-sm text-slate-500">Konfirmasi pembayaran penghuni atau lihat riwayat.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 gap-6 md:gap-8 fade-in delay-200">
-                    <div class="bg-white dark:bg-surface rounded-2xl shadow-sm border border-yellow-200 dark:border-yellow-500/30 overflow-hidden relative">
-                        <div class="absolute left-0 top-0 w-1.5 h-full bg-yellow-400"></div>
-                        <div class="p-4 md:p-5 border-b border-slate-100 dark:border-slate-800 bg-yellow-50/50 dark:bg-yellow-500/5">
-                            <h4 class="font-bold text-yellow-700 dark:text-yellow-400 flex items-center gap-2"><i class="ph-fill ph-hourglass-high"></i> Perlu Verifikasi</h4>
-                        </div>
-                        ${renderGroup('Menunggu Konfirmasi')}
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                        <div class="bg-white dark:bg-surface rounded-2xl shadow-sm border border-red-200 dark:border-red-500/30 overflow-hidden relative">
-                            <div class="absolute left-0 top-0 w-1.5 h-full bg-red-500"></div>
-                            <div class="p-4 md:p-5 border-b border-slate-100 dark:border-slate-800 bg-red-50/50 dark:bg-red-500/5">
-                                <h4 class="font-bold text-red-700 dark:text-red-400 flex items-center gap-2"><i class="ph-fill ph-warning-circle"></i> Belum Lunas</h4>
-                            </div>
-                            ${renderGroup('Belum Lunas')}
-                        </div>
-
-                        <div class="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                            <div class="p-4 md:p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
-                                <h4 class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2"><i class="ph-fill ph-check-circle text-green-500"></i> Riwayat Lunas</h4>
-                            </div>
-                            <div class="max-h-[500px] overflow-y-auto custom-scrollbar">
-                                ${renderGroup('Lunas')}
-                            </div>
-                        </div>
+                <div class="mb-4 md:mb-6 fade-in"><h3 class="text-lg md:text-xl font-bold dark:text-white">Arus Kas & Tagihan</h3></div>
+                <div class="grid grid-cols-1 gap-4 md:gap-6 fade-in delay-200">
+                    <div class="bg-white dark:bg-surface rounded-2xl shadow-sm border border-yellow-200 dark:border-yellow-500/30 overflow-hidden relative"><div class="absolute left-0 top-0 w-1 md:w-1.5 h-full bg-yellow-400"></div><div class="p-3 md:p-4 border-b dark:border-slate-800 bg-yellow-50/50 dark:bg-yellow-500/5"><h4 class="font-bold text-sm md:text-base text-yellow-700 dark:text-yellow-400">Perlu Verifikasi</h4></div>${renderGroup('Menunggu Konfirmasi')}</div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                        <div class="bg-white dark:bg-surface rounded-2xl shadow-sm border border-red-200 dark:border-red-500/30 overflow-hidden relative"><div class="absolute left-0 top-0 w-1 md:w-1.5 h-full bg-red-500"></div><div class="p-3 md:p-4 border-b dark:border-slate-800 bg-red-50/50 dark:bg-red-500/5"><h4 class="font-bold text-sm md:text-base text-red-700 dark:text-red-400">Belum Lunas</h4></div>${renderGroup('Belum Lunas')}</div>
+                        <div class="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden"><div class="p-3 md:p-4 border-b dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50"><h4 class="font-bold text-sm md:text-base text-slate-700 dark:text-slate-300">Riwayat Lunas</h4></div><div class="max-h-[400px] md:max-h-[500px] overflow-y-auto">${renderGroup('Lunas')}</div></div>
                     </div>
                 </div>
             `;
             return div;
         }
 
-        window.konfirmasiTagihan = async (id) => {
+        window.konfirmasiTagihan = (id) => {
             const t = state.tagihan.find(x => x.id === id);
             if(t) {
-                if(t.status_bayar === 'Belum Lunas' && !confirm('Yakin set Lunas tanpa konfirmasi penghuni?')) return;
-                try {
-                    await updateDoc(getDocRef('tagihan', id), { status_bayar: 'Lunas' });
-                    showToast('Pembayaran berhasil diverifikasi ke database!', 'success');
-                } catch (error) {
-                    console.error(error);
-                    showToast('Gagal memverifikasi tagihan', 'error');
-                }
+                if(t.status_bayar === 'Belum Lunas' && !confirm('Yakin set Lunas manual?')) return;
+                runLocalAction(async () => { await updateDoc(getDocRef('tagihan', id), { status_bayar: 'Lunas' }); showToast('Verifikasi sukses!'); });
             }
         };
 
         function renderAdminKomplain() {
             const div = document.createElement('div');
-            
             let listHtml = '';
-            const sortedKomplain = [...state.komplain].sort((a,b) => b.id - a.id);
-            sortedKomplain.forEach(k => {
+            [...state.komplain].sort((a,b) => b.id - a.id).forEach(k => {
                 const p = state.penghuni.find(x => x.id === k.id_penghuni) || {};
                 const isP = k.status === 'Pending';
-                
                 listHtml += `
-                    <div class="bg-white dark:bg-surface p-4 md:p-5 rounded-2xl border ${isP ? 'border-rose-200 dark:border-red-500/30 shadow-sm' : 'border-slate-100 dark:border-slate-700 opacity-70'} flex flex-col sm:flex-row gap-4 justify-between sm:items-start transition hover:opacity-100 mb-4">
-                        <div class="flex gap-4">
-                            <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500 shrink-0">
-                                <i class="${isP ? 'ph-fill ph-warning-circle text-red-500' : 'ph-check text-green-500'} text-xl"></i>
-                            </div>
-                            <div class="flex-1 w-full overflow-hidden">
-                                <h4 class="font-bold dark:text-white truncate">${p.nama || p.username} <span class="text-xs font-normal text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded ml-1 md:ml-2">Kmr ${getAssignedRoom(k.id_penghuni)}</span></h4>
-                                <p class="text-xs text-slate-400 mb-2">${k.tanggal}</p>
-                                <p class="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-sm leading-relaxed break-words">"${k.isi}"</p>
+                    <div class="bg-white dark:bg-surface p-4 rounded-2xl border ${isP ? 'border-rose-200 dark:border-red-500/30' : 'border-slate-100 dark:border-slate-800 opacity-70'} flex flex-col sm:flex-row gap-3 md:gap-4 justify-between transition hover:opacity-100 mb-3 md:mb-4">
+                        <div class="flex gap-3 md:gap-4 w-full min-w-0">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0"><i class="${isP ? 'ph-fill ph-warning-circle text-red-500' : 'ph-check text-green-500'} text-lg md:text-xl"></i></div>
+                            <div class="overflow-hidden w-full">
+                                <h4 class="font-bold dark:text-white text-sm md:text-base truncate">${p.nama || p.username} <span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 rounded ml-1 text-slate-500">Kmr ${getAssignedRoom(k.id_penghuni)}</span></h4>
+                                <p class="text-[10px] md:text-xs text-slate-400 mb-1.5 md:mb-2">${k.tanggal}</p>
+                                <p class="bg-slate-50 dark:bg-slate-800/50 p-2 md:p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-xs md:text-sm break-words whitespace-pre-wrap">"${k.isi}"</p>
                             </div>
                         </div>
-                        <div class="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800 justify-end shrink-0">
-                            ${isP ? `<button onclick="selesaiKomplain(${k.id})" class="btn-animate flex-1 sm:flex-none px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold shadow-md flex justify-center items-center gap-1.5 whitespace-nowrap"><i class="ph-bold ph-check"></i> Selesai</button>` : ''}
-                            <button onclick="hapusKomplain(${k.id})" class="btn-animate p-2 px-3 bg-rose-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 rounded-xl text-sm font-bold flex justify-center"><i class="ph-bold ph-trash text-lg"></i></button>
+                        <div class="flex gap-2 w-full sm:w-auto mt-2 pt-3 border-t sm:border-none border-slate-100 dark:border-slate-800 justify-end shrink-0">
+                            ${isP ? `<button onclick="selesaiKomplain(${k.id})" class="flex-1 sm:flex-none px-4 py-2 bg-primary text-white rounded-xl text-xs md:text-sm font-bold">Selesai</button>` : ''}
+                            <button onclick="hapusKomplain(${k.id})" class="p-2 px-3 bg-rose-50 text-red-600 dark:bg-red-900/20 rounded-xl font-bold"><i class="ph-bold ph-trash"></i></button>
                         </div>
                     </div>
                 `;
             });
-
-            div.innerHTML = `
-                <div class="mb-6 fade-in delay-100">
-                    <h3 class="text-xl font-bold dark:text-white">Pusat Resolusi Komplain</h3>
-                    <p class="text-sm text-slate-500">Tanggapi keluhan penghuni agar mereka betah.</p>
-                </div>
-                <div class="max-w-4xl fade-in delay-200">
-                    ${listHtml || '<div class="text-center p-10 bg-white dark:bg-surface rounded-2xl border border-dashed border-slate-300 dark:border-slate-700"><i class="ph-fill ph-smiley text-4xl text-slate-300 mb-3"></i><p class="text-slate-500">Hore! Tidak ada komplain hari ini.</p></div>'}
-                </div>
-            `;
+            div.innerHTML = `<div class="mb-4 md:mb-6"><h3 class="text-lg md:text-xl font-bold dark:text-white">Pusat Komplain</h3></div><div class="max-w-4xl">${listHtml || '<div class="text-center p-10 bg-white dark:bg-surface rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"><p class="text-slate-500 text-sm">Tidak ada komplain.</p></div>'}</div>`;
             return div;
         }
 
-        window.selesaiKomplain = async (id) => {
-            try {
-                await updateDoc(getDocRef('komplain', id), { status: 'Selesai' });
-                showToast('Komplain ditandai selesai di database!');
-            } catch (error) {
-                console.error(error);
-                showToast('Gagal update status komplain', 'error');
-            }
-        };
-        window.hapusKomplain = async (id) => {
-            if(confirm('Hapus komplain ini dari riwayat secara permanen?')) {
-                try {
-                    await deleteDoc(getDocRef('komplain', id));
-                    showToast('Terhapus dari database.');
-                } catch (error) {
-                    console.error(error);
-                    showToast('Gagal menghapus komplain', 'error');
-                }
-            }
-        };
+        window.selesaiKomplain = (id) => runLocalAction(async () => { await updateDoc(getDocRef('komplain', id), { status: 'Selesai' }); showToast('Selesai!'); });
+        window.hapusKomplain = (id) => { if(confirm('Hapus komplain?')) runLocalAction(async () => { await deleteDoc(getDocRef('komplain', id)); showToast('Dihapus.'); }); };
 
         function renderAdminPengumuman() {
             const div = document.createElement('div');
-            
             let listHtml = '';
-            const sortedPengumuman = [...state.pengumuman].sort((a,b) => b.id - a.id);
-            sortedPengumuman.forEach(p => {
-                const bg = p.tipe === 'penting' ? 'bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/20' : 'bg-blue-50 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20';
-                const icon = p.tipe === 'penting' ? 'ph-warning-octagon text-red-500' : 'ph-info text-blue-500';
+            [...state.pengumuman].sort((a,b) => b.id - a.id).forEach(p => {
+                const isP = p.tipe === 'penting';
                 listHtml += `
-                    <div class="p-4 md:p-5 rounded-2xl border ${bg} mb-4 flex justify-between items-start gap-3">
-                        <div class="flex gap-3">
-                            <i class="ph-fill ${icon} text-2xl mt-0.5 shrink-0"></i>
-                            <div class="overflow-hidden">
-                                <h4 class="font-bold dark:text-white text-lg break-words">${p.judul}</h4>
-                                <p class="text-xs text-slate-500 mb-2">${p.tanggal}</p>
-                                <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed break-words">${p.isi}</p>
+                    <div class="p-3 md:p-4 rounded-2xl border ${isP ? 'bg-red-50 border-red-200 dark:bg-red-900/10 dark:border-red-900/30' : 'bg-blue-50 border-blue-200 dark:bg-blue-900/10 dark:border-blue-900/30'} mb-3 md:mb-4 flex justify-between gap-2 md:gap-3">
+                        <div class="flex gap-2 md:gap-3 w-full min-w-0">
+                            <i class="ph-fill ${isP ? 'ph-warning-octagon text-red-500' : 'ph-info text-blue-500'} text-xl md:text-2xl mt-0.5 shrink-0"></i>
+                            <div class="overflow-hidden w-full">
+                                <h4 class="font-bold dark:text-white text-sm md:text-lg truncate">${p.judul}</h4>
+                                <p class="text-[10px] md:text-xs text-slate-500 mb-1 md:mb-2">${p.tanggal}</p>
+                                <p class="text-xs md:text-sm dark:text-slate-300 break-words">${p.isi}</p>
                             </div>
                         </div>
-                        <button onclick="hapusPengumuman(${p.id})" class="text-slate-400 hover:text-red-500 transition shrink-0"><i class="ph-bold ph-x text-xl md:text-lg"></i></button>
+                        <button onclick="hapusPengumuman(${p.id})" class="text-slate-400 hover:text-red-500 shrink-0"><i class="ph-bold ph-x text-lg md:text-xl"></i></button>
                     </div>
                 `;
             });
-
             div.innerHTML = `
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 fade-in">
-                    <div>
-                        <div class="mb-6">
-                            <h3 class="text-xl font-bold dark:text-white">Broadcast Pengumuman</h3>
-                            <p class="text-sm text-slate-500">Kirim pesan ke seluruh dashboard penghuni kost.</p>
-                        </div>
-                        <form id="formPengumuman" class="bg-white dark:bg-surface p-5 md:p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                            <div><label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Judul Pengumuman</label>
-                            <input type="text" id="peng_judul" required placeholder="Cth: Mati Lampu Besok" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white"></div>
-                            
-                            <div><label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Isi Pesan</label>
-                            <textarea id="peng_isi" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white h-32 resize-none"></textarea></div>
-                            
-                            <div><label class="block text-sm font-medium mb-1.5 dark:text-slate-300">Sifat Pesan</label>
-                            <select id="peng_tipe" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none dark:text-white appearance-none cursor-pointer">
-                                <option value="info">Info Biasa</option>
-                                <option value="penting">Sangat Penting / Darurat</option>
-                            </select></div>
-                            
-                            <button type="submit" class="btn-animate w-full py-3.5 bg-primary text-white font-bold rounded-xl shadow-lg mt-2 flex justify-center items-center gap-2"><i class="ph-bold ph-paper-plane-right"></i> Kirim Broadcast</button>
+                    <!-- Form Broadcast (Di atas pada mobile) -->
+                    <div class="order-1">
+                        <div class="mb-4 md:mb-6"><h3 class="text-lg md:text-xl font-bold dark:text-white">Broadcast Pengumuman</h3></div>
+                        <form id="formPengumuman" class="bg-white dark:bg-surface p-4 md:p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3 md:space-y-4">
+                            <input type="text" id="peng_judul" required placeholder="Judul..." class="w-full px-4 py-2.5 rounded-xl border dark:bg-slate-900 dark:border-slate-700 dark:text-white text-sm">
+                            <textarea id="peng_isi" required placeholder="Isi pesan..." class="w-full px-4 py-3 rounded-xl border dark:bg-slate-900 dark:border-slate-700 dark:text-white h-24 md:h-32 resize-none text-sm"></textarea>
+                            <select id="peng_tipe" class="w-full px-4 py-2.5 rounded-xl border dark:bg-slate-900 dark:text-white cursor-pointer text-sm dark:border-slate-700"><option value="info">Info Biasa</option><option value="penting">Sangat Penting</option></select>
+                            <button type="submit" class="w-full py-3 bg-primary text-white font-bold rounded-xl mt-2 text-sm md:text-base">Kirim Broadcast</button>
                         </form>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-lg mb-4 dark:text-white mt-4 lg:mt-0">Riwayat Pengumuman</h4>
-                        <div class="max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
-                            ${listHtml || '<p class="text-slate-500 italic text-sm">Belum ada pengumuman terkirim.</p>'}
-                        </div>
-                    </div>
+                    <!-- Riwayat (Di bawah pada mobile) -->
+                    <div class="order-2"><h4 class="font-bold text-base md:text-lg mb-3 md:mb-4 dark:text-white">Riwayat Pengumuman</h4><div class="max-h-[400px] md:max-h-[500px] overflow-y-auto custom-scrollbar pr-1 md:pr-2">${listHtml || '<p class="text-slate-500 italic text-sm">Belum ada.</p>'}</div></div>
                 </div>
             `;
-
             setTimeout(() => {
-                div.querySelector('#formPengumuman').addEventListener('submit', async (e) => {
+                div.querySelector('#formPengumuman').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const newId = Date.now();
-                    const newPengumuman = {
-                        id: newId,
-                        judul: document.getElementById('peng_judul').value,
-                        isi: document.getElementById('peng_isi').value,
-                        tipe: document.getElementById('peng_tipe').value,
-                        tanggal: new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})
-                    };
-                    
-                    try {
-                        await setDoc(getDocRef('pengumuman', newId), newPengumuman);
-                        showToast('Pengumuman terkirim ke semua penghuni!', 'success');
-                        document.getElementById('formPengumuman').reset();
-                    } catch (error) {
-                        console.error(error);
-                        showToast('Gagal mengirim pengumuman', 'error');
-                    }
+                    runLocalAction(async () => {
+                        const newId = Date.now();
+                        await setDoc(getDocRef('pengumuman', newId), { id: newId, judul: document.getElementById('peng_judul').value, isi: document.getElementById('peng_isi').value, tipe: document.getElementById('peng_tipe').value, tanggal: new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}) });
+                        showToast('Broadcast terkirim!', 'success'); document.getElementById('formPengumuman').reset();
+                    });
                 });
             }, 0);
-
             return div;
         }
-        
-        window.hapusPengumuman = async (id) => { 
-            try {
-                await deleteDoc(getDocRef('pengumuman', id));
-                showToast('Pengumuman dihapus dari database.');
-            } catch (error) {
-                console.error(error);
-                showToast('Gagal menghapus pengumuman', 'error');
-            }
-        };
+        window.hapusPengumuman = (id) => runLocalAction(async () => { await deleteDoc(getDocRef('pengumuman', id)); showToast('Dihapus.'); });
 
 
         // ==========================================
@@ -1238,66 +977,32 @@
             
             let pengumumanHtml = '';
             if(state.pengumuman.length > 0) {
-                const sorted = [...state.pengumuman].sort((a,b) => a.id - b.id);
-                const latest = sorted[sorted.length - 1];
-                const iconP = latest.tipe === 'penting' ? 'ph-warning-octagon text-red-500' : 'ph-megaphone text-primary';
-                const bgP = latest.tipe === 'penting' ? 'bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/10 border-red-200 dark:border-red-800' : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 border-blue-200 dark:border-blue-800';
-                
+                const latest = [...state.pengumuman].sort((a,b) => a.id - b.id).pop();
                 pengumumanHtml = `
-                    <div class="${bgP} border p-4 md:p-5 rounded-2xl mb-6 md:mb-8 flex gap-3 md:gap-4 items-start shadow-sm fade-in">
-                        <div class="p-2 md:p-3 bg-white dark:bg-slate-800 rounded-full shadow-sm shrink-0"><i class="ph-fill ${iconP} text-xl md:text-2xl"></i></div>
-                        <div>
-                            <span class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1 block">Info Terbaru dari Admin</span>
-                            <h4 class="font-extrabold text-base md:text-lg dark:text-white text-slate-800 break-words">${latest.judul}</h4>
-                            <p class="text-xs md:text-sm mt-1 text-slate-600 dark:text-slate-300 leading-relaxed break-words">${latest.isi}</p>
-                        </div>
+                    <div class="border p-4 md:p-5 rounded-[1.5rem] mb-6 flex gap-3 md:gap-4 items-start shadow-sm ${latest.tipe === 'penting' ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-900/30' : 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-900/30'}">
+                        <div class="p-2 md:p-3 bg-white dark:bg-slate-800 rounded-full shadow-sm shrink-0"><i class="ph-fill ${latest.tipe === 'penting' ? 'ph-warning-octagon text-red-500' : 'ph-megaphone text-primary'} text-xl md:text-2xl"></i></div>
+                        <div class="overflow-hidden"><span class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1 block">Info Admin</span><h4 class="font-extrabold text-sm md:text-lg dark:text-white truncate">${latest.judul}</h4><p class="text-xs md:text-sm mt-1 text-slate-600 dark:text-slate-300 line-clamp-3">${latest.isi}</p></div>
                     </div>
                 `;
             }
 
             div.innerHTML = `
                 ${pengumumanHtml}
-                
-                <h3 class="text-xl md:text-2xl font-bold dark:text-white mb-4 md:mb-6 fade-in delay-100">Ringkasan Kost Kamu</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 fade-in delay-200">
-                    <!-- Status Kamar -->
-                    <div class="bg-white dark:bg-surface rounded-3xl p-5 md:p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
-                        <div class="absolute -right-6 -bottom-6 opacity-5 dark:opacity-10 group-hover:scale-110 transition-transform duration-500"><i class="ph-fill ph-door text-9xl"></i></div>
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex justify-center items-center"><i class="ph-bold ph-bed text-xl"></i></div>
-                            <h4 class="font-bold text-slate-500 dark:text-slate-400">Kamar Saat Ini</h4>
-                        </div>
-                        <h2 class="text-5xl font-black text-slate-800 dark:text-white mb-2">${kamarSaya !== '-' ? kamarSaya : '<span class="text-2xl">Belum ada</span>'}</h2>
-                        <p class="text-sm text-green-500 font-semibold flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Status Aktif</p>
+                <h3 class="text-lg md:text-2xl font-bold dark:text-white mb-4 md:mb-6 fade-in">Ringkasan Kost</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 fade-in delay-100">
+                    <div class="bg-white dark:bg-surface rounded-3xl p-5 md:p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
+                        <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4"><div class="w-8 h-8 md:w-10 md:h-10 bg-primary/10 text-primary rounded-xl flex justify-center items-center"><i class="ph-bold ph-bed text-lg md:text-xl"></i></div><h4 class="font-bold text-slate-500 dark:text-slate-400 text-sm md:text-base">Kamar</h4></div>
+                        <h2 class="text-4xl md:text-5xl font-black text-slate-800 dark:text-white mb-1 md:mb-2">${kamarSaya !== '-' ? kamarSaya : '<span class="text-xl">Belum ada</span>'}</h2>
+                        <p class="text-xs md:text-sm text-green-500 font-semibold flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Aktif</p>
                     </div>
-
-                    <!-- Status Tagihan -->
-                    <div class="bg-white dark:bg-surface rounded-3xl p-5 md:p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group">
-                        <div class="absolute -right-6 -bottom-6 opacity-5 dark:opacity-10 group-hover:scale-110 transition-transform duration-500"><i class="ph-fill ph-receipt text-9xl"></i></div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-rose-100 dark:bg-red-500/20 text-red-500 rounded-xl flex justify-center items-center"><i class="ph-bold ph-wallet text-xl"></i></div>
-                                <h4 class="font-bold text-slate-500 dark:text-slate-400">Tagihan Aktif</h4>
-                            </div>
-                        </div>
-                        ${tagihanBelumLunas.length > 0 ? `
-                            <h2 class="text-3xl md:text-4xl font-black text-slate-800 dark:text-white mb-2 break-all">${formatRupiah(tagihanBelumLunas[0].nominal)}</h2>
-                            <button onclick="changeTab('tagihan')" class="text-sm text-primary font-bold hover:underline">Bayar Sekarang &rarr;</button>
-                        ` : `
-                            <h2 class="text-3xl md:text-4xl font-black text-slate-800 dark:text-white mb-2">Rp 0</h2>
-                            <p class="text-sm text-green-500 font-semibold flex items-center gap-1"><i class="ph-fill ph-smiley"></i> Yeay! Semua lunas.</p>
-                        `}
+                    <div class="bg-white dark:bg-surface rounded-3xl p-5 md:p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-4"><div class="w-8 h-8 md:w-10 md:h-10 bg-red-100 text-red-500 rounded-xl flex justify-center items-center dark:bg-red-500/20"><i class="ph-bold ph-wallet text-lg md:text-xl"></i></div><h4 class="font-bold text-slate-500 dark:text-slate-400 text-sm md:text-base">Tagihan</h4></div>
+                        ${tagihanBelumLunas.length > 0 ? `<h2 class="text-2xl md:text-4xl font-black dark:text-white mb-1 md:mb-2">${formatRupiah(tagihanBelumLunas[0].nominal)}</h2><button onclick="changeTab('tagihan')" class="text-xs md:text-sm text-primary font-bold hover:underline">Bayar Sekarang &rarr;</button>` : `<h2 class="text-2xl md:text-4xl font-black dark:text-white mb-1 md:mb-2">Rp 0</h2><p class="text-xs md:text-sm text-green-500 font-semibold flex gap-1"><i class="ph-fill ph-smiley"></i> Lunas.</p>`}
                     </div>
                 </div>
-
-                <div class="mt-6 md:mt-8 bg-slate-800 dark:bg-primary text-white rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-5 shadow-xl fade-in delay-300 overflow-hidden relative">
-                    <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay"></div>
-                    <div class="relative z-10 text-center md:text-left">
-                        <h3 class="text-xl md:text-2xl font-bold mb-2">Ada masalah di kamar kost?</h3>
-                        <p class="text-sm md:text-base text-slate-300 dark:text-blue-100">Jangan ragu hubungi Admin. Kami siap bantu perbaiki kerusakan secepatnya.</p>
-                    </div>
-                    <button onclick="changeTab('komplain')" class="relative z-10 btn-animate shrink-0 w-full md:w-auto px-6 py-3.5 bg-white text-slate-800 dark:text-primary font-bold rounded-xl shadow-lg flex items-center justify-center gap-2">Buat Laporan <i class="ph-bold ph-arrow-right"></i></button>
+                <div class="mt-4 md:mt-6 bg-slate-800 dark:bg-primary text-white rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-5 shadow-xl fade-in delay-200 relative overflow-hidden">
+                    <div class="text-center md:text-left z-10"><h3 class="text-lg md:text-2xl font-bold mb-1 md:mb-2">Ada masalah?</h3><p class="text-[10px] md:text-sm text-slate-300">Hubungi Admin sekarang.</p></div>
+                    <button onclick="changeTab('komplain')" class="z-10 w-full md:w-auto px-5 py-3 md:py-3.5 bg-white text-slate-800 font-bold rounded-xl shadow-lg flex justify-center gap-2 text-sm md:text-base">Lapor <i class="ph-bold ph-arrow-right"></i></button>
                 </div>
             `;
             return div;
@@ -1305,162 +1010,88 @@
 
         function renderPenghuniTagihan() {
             const div = document.createElement('div');
-            const myTagihan = state.tagihan.filter(t => t.id_penghuni === state.loggedInUser.id);
-            myTagihan.sort((a,b) => b.id - a.id);
-            
-            let html = '<div class="space-y-4 fade-in delay-100">';
+            const myTagihan = state.tagihan.filter(t => t.id_penghuni === state.loggedInUser.id).sort((a,b) => b.id - a.id);
+            let html = '<div class="space-y-3 md:space-y-4 fade-in delay-100">';
             myTagihan.forEach(t => {
-                const isLunas = t.status_bayar === 'Lunas';
-                const isNunggu = t.status_bayar === 'Menunggu Konfirmasi';
-                let bgBorder = isLunas ? 'border-green-200 dark:border-green-500/30 bg-white dark:bg-surface' : (isNunggu ? 'border-yellow-200 dark:border-yellow-500/30 bg-yellow-50/30 dark:bg-yellow-900/10' : 'border-red-200 dark:border-red-500/30 bg-red-50/30 dark:bg-red-900/10 shadow-md');
-                let badge = isLunas ? 'bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400' : (isNunggu ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400' : 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400');
-                
-                let btn = '';
-                if(!isLunas && !isNunggu) btn = `<button onclick="bayarTagihan(${t.id})" class="btn-animate w-full md:w-auto px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg flex justify-center items-center gap-2 mt-4 md:mt-0"><i class="ph-bold ph-wallet"></i> Bayar</button>`;
-                else if(isNunggu) btn = `<span class="px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs md:text-sm font-medium text-slate-500 flex items-center gap-2 w-full md:w-auto justify-center mt-4 md:mt-0"><i class="ph-fill ph-hourglass-high"></i> Menunggu Verifikasi</span>`;
+                const isLunas = t.status_bayar === 'Lunas', isNunggu = t.status_bayar === 'Menunggu Konfirmasi';
+                let bgBorder = isLunas ? 'border-green-200 bg-white dark:bg-surface dark:border-green-900/30' : (isNunggu ? 'border-yellow-200 bg-yellow-50/30 dark:bg-yellow-900/10' : 'border-red-200 bg-red-50/30 shadow-md dark:bg-red-900/10');
+                let badge = isLunas ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : (isNunggu ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400' : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400');
+                let btn = (!isLunas && !isNunggu) ? `<button onclick="bayarTagihan(${t.id})" class="btn-animate w-full md:w-auto px-6 py-2.5 md:py-3 bg-primary text-white font-bold rounded-xl mt-3 md:mt-0 text-sm md:text-base"><i class="ph-bold ph-wallet"></i> Bayar</button>` : (isNunggu ? `<span class="px-4 py-2.5 md:py-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-[10px] md:text-xs text-slate-500 w-full md:w-auto mt-3 md:mt-0 flex justify-center"><i class="ph-fill ph-hourglass-high"></i> Menunggu Konfirmasi</span>` : '');
 
                 html += `
-                    <div class="p-5 md:p-6 rounded-2xl border ${bgBorder} flex flex-col md:flex-row justify-between md:items-center gap-2 md:gap-6 transition-all hover:shadow-lg">
-                        <div class="flex gap-4 md:gap-5 items-center">
-                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shadow-inner shrink-0">
-                                <i class="ph-fill ph-receipt text-2xl md:text-3xl text-slate-400"></i>
-                            </div>
-                            <div class="overflow-hidden w-full">
-                                <p class="text-[10px] md:text-xs font-mono text-slate-400 mb-1">#INV-${String(t.id).substring(0,4)} &bull; ${t.tanggal}</p>
-                                <h4 class="text-xl md:text-2xl font-extrabold dark:text-white mb-2 break-all">${formatRupiah(t.nominal)}</h4>
-                                <span class="px-2 md:px-3 py-1 rounded-lg text-[10px] md:text-xs font-bold inline-block ${badge}">${t.status_bayar}</span>
+                    <div class="p-4 md:p-5 rounded-2xl border ${bgBorder} flex flex-col md:flex-row justify-between md:items-center transition-all">
+                        <div class="flex gap-3 md:gap-4 items-center">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0"><i class="ph-fill ph-receipt text-xl md:text-2xl text-slate-400"></i></div>
+                            <div class="overflow-hidden">
+                                <p class="text-[10px] font-mono text-slate-400 mb-0.5">INV-${String(t.id).substring(0,4)} &bull; ${t.tanggal}</p>
+                                <h4 class="text-lg md:text-xl font-extrabold dark:text-white mb-1 truncate">${formatRupiah(t.nominal)}</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badge} inline-block">${t.status_bayar}</span>
                             </div>
                         </div>
-                        <div class="w-full md:w-auto border-t border-slate-100 dark:border-slate-700/50 md:border-none pt-2 md:pt-0 shrink-0">
-                            ${btn}
-                        </div>
+                        <div class="w-full md:w-auto border-t border-slate-100 dark:border-slate-800 md:border-none pt-2 md:pt-0 mt-3 md:mt-0 shrink-0">${btn}</div>
                     </div>
                 `;
             });
-            html += '</div>';
-            if(myTagihan.length === 0) html = '<div class="text-center py-20 text-slate-400"><i class="ph-fill ph-check-circle text-6xl mb-4 text-slate-200 dark:text-slate-700"></i><p>Belum ada tagihan masuk.</p></div>';
-
-            div.innerHTML = `
-                <div class="mb-6 fade-in">
-                    <h3 class="text-xl md:text-2xl font-bold dark:text-white">Tagihan Kost</h3>
-                    <p class="text-sm md:text-base text-slate-500">Bayar tepat waktu untuk menghindari teguran ya.</p>
-                </div>
-                ${html}
-            `;
+            div.innerHTML = `<div class="mb-4 md:mb-6 fade-in"><h3 class="text-lg md:text-2xl font-bold dark:text-white">Tagihan Kost</h3></div>${html || '<div class="text-center py-20 text-slate-400 text-sm">Belum ada tagihan.</div></div>'}`;
             return div;
         }
 
-        window.bayarTagihan = async (id) => {
-            const htmlModal = `
-            Pilih metode pembayaran (Ketik Angka):
-            1 - 🏦 Transfer BCA
-            2 - 💵 Uang Tunai (Berikan ke Admin)
-            `;
-            const m = prompt(htmlModal);
-            if(m === '1' || m === '2') {
-                try {
-                    const metodeStr = m === '1' ? 'Transfer BCA' : 'Cash';
-                    await updateDoc(getDocRef('tagihan', id), { 
-                        status_bayar: 'Menunggu Konfirmasi',
-                        metode: metodeStr
-                    });
-                    
-                    if(m==='1') alert('💳 INFO TRANSFER:\n\nBCA: 988657896\nA.N Kost Rama\n\nSimpan bukti transfer. Admin akan cek mutasi 1x24 jam.');
-                    else alert('🤝 INFO CASH:\n\nNotifikasi dikirim! Admin akan mendatangimu atau temui di pos jaga.');
-                    showToast('Permintaan pembayaran tersimpan di database!', 'success');
-                } catch (error) {
-                    console.error(error);
-                    showToast('Gagal memproses pembayaran', 'error');
-                }
-            }
+        window.bayarTagihan = (id) => {
+            const m = prompt('Ketik angka:\n1 - Transfer BCA\n2 - Uang Tunai (Cash)');
+            if(m === '1' || m === '2') runLocalAction(async () => {
+                await updateDoc(getDocRef('tagihan', id), { status_bayar: 'Menunggu Konfirmasi', metode: m === '1' ? 'Transfer BCA' : 'Cash' });
+                if(m==='1') alert('TRANSFER ke BCA: 988657896 A.N Kost Rama'); else alert('Notifikasi dikirim ke Admin.');
+                showToast('Pembayaran diproses!');
+            });
         };
 
         function renderPenghuniKomplain() {
             const div = document.createElement('div');
-            
-            const myKomplain = state.komplain.filter(k => k.id_penghuni === state.loggedInUser.id);
             let kompHtml = '';
-            [...myKomplain].sort((a,b) => b.id - a.id).forEach(k => {
+            [...state.komplain].filter(k => k.id_penghuni === state.loggedInUser.id).sort((a,b) => b.id - a.id).forEach(k => {
                 const isP = k.status === 'Pending';
                 kompHtml += `
-                    <div class="p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-surface mb-3 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start shadow-sm">
-                        <div class="hidden sm:block mt-1"><i class="ph-fill ${isP ? 'ph-clock text-yellow-500' : 'ph-check-circle text-green-500'} text-xl"></i></div>
-                        <div class="flex-1 w-full">
-                            <div class="flex sm:hidden items-center gap-2 mb-2">
-                                <i class="ph-fill ${isP ? 'ph-clock text-yellow-500' : 'ph-check-circle text-green-500'} text-lg"></i>
-                                <span class="text-xs font-medium text-slate-400">Status: <span class="${isP?'text-yellow-600 dark:text-yellow-400':'text-green-600 dark:text-green-400'}">${k.status}</span></span>
-                            </div>
-                            <p class="text-sm dark:text-slate-200 leading-relaxed mb-2 break-words">"${k.isi}"</p>
-                            <p class="hidden sm:block text-xs font-medium text-slate-400">Status: <span class="${isP?'text-yellow-600 dark:text-yellow-400':'text-green-600 dark:text-green-400'}">${k.status}</span></p>
+                    <div class="p-3 md:p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-surface mb-3 flex flex-col sm:flex-row gap-2 sm:gap-3 items-start shadow-sm">
+                        <div class="flex-1 w-full min-w-0">
+                            <div class="flex items-center gap-1.5 mb-1.5 md:mb-2"><i class="ph-fill ${isP ? 'ph-clock text-yellow-500' : 'ph-check-circle text-green-500'} text-sm md:text-base"></i><span class="text-[10px] md:text-xs font-medium text-slate-400">${k.status}</span></div>
+                            <p class="text-xs md:text-sm dark:text-slate-200 break-words">"${k.isi}"</p>
                         </div>
-                        ${isP ? `<button onclick="batalKomplain(${k.id})" class="w-full sm:w-auto text-xs font-bold text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg transition shrink-0 mt-2 sm:mt-0">Batal</button>` : ''}
+                        ${isP ? `<button onclick="batalKomplain(${k.id})" class="text-[10px] md:text-xs font-bold text-red-500 bg-red-50 dark:bg-red-900/20 px-2 md:px-3 py-1.5 md:py-2 rounded-lg w-full sm:w-auto mt-1 sm:mt-0">Batal</button>` : ''}
                     </div>
                 `;
             });
 
             div.innerHTML = `
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 fade-in">
-                    <div>
-                        <div class="mb-5 md:mb-6">
-                            <h3 class="text-xl md:text-2xl font-bold dark:text-white">Lapor Masalah</h3>
-                            <p class="text-slate-500 text-sm">Ada kerusakan di kamar? Beritahu admin di sini.</p>
-                        </div>
-                        <form id="formKirimKomplain" class="bg-white dark:bg-surface p-5 md:p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
-                            <textarea id="isiKomplain" required placeholder="Ceritakan detail masalahnya..." class="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white resize-none h-32 md:h-40 transition mb-4"></textarea>
-                            <button type="submit" class="btn-animate w-full bg-primary text-white py-3.5 rounded-xl font-bold shadow-lg shadow-primary/30 flex justify-center items-center gap-2"><i class="ph-bold ph-paper-plane-right"></i> Kirim Laporan</button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6 fade-in">
+                    <div class="order-1">
+                        <div class="mb-3 md:mb-5"><h3 class="text-lg md:text-xl font-bold dark:text-white">Lapor Masalah</h3></div>
+                        <form id="formKirimKomplain" class="bg-white dark:bg-surface p-4 md:p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
+                            <textarea id="isiKomplain" required placeholder="Tulis masalah di sini..." class="w-full p-3 md:p-4 rounded-xl border border-slate-200 bg-slate-50 outline-none dark:bg-slate-900 dark:border-slate-700 dark:text-white h-28 md:h-32 mb-3 md:mb-4 text-sm"></textarea>
+                            <button type="submit" class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm md:text-base">Kirim</button>
                         </form>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-lg mb-4 dark:text-white mt-2 lg:mt-0">Riwayat Laporan Kamu</h4>
-                        <div class="max-h-[500px] overflow-y-auto custom-scrollbar pr-1 md:pr-2">
-                            ${kompHtml || '<div class="text-center py-10 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl"><p class="text-slate-400 text-sm">Belum ada riwayat komplain.</p></div>'}
-                        </div>
-                    </div>
+                    <div class="order-2"><h4 class="font-bold text-base md:text-lg mb-3 md:mb-4 dark:text-white mt-2 lg:mt-0">Riwayat</h4><div class="max-h-[300px] md:max-h-[500px] overflow-y-auto custom-scrollbar pr-1 md:pr-2">${kompHtml || '<div class="text-center py-8 text-slate-400 text-xs md:text-sm">Kosong.</div>'}</div></div>
                 </div>
             `;
 
             setTimeout(() => {
-                div.querySelector('#formKirimKomplain').addEventListener('submit', async (e) => {
+                div.querySelector('#isiKomplain').addEventListener('keydown', (e) => { e.stopPropagation(); });
+                div.querySelector('#formKirimKomplain').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const isi = document.getElementById('isiKomplain').value;
-                    const newId = Date.now();
-                    
-                    try {
-                        await setDoc(getDocRef('komplain', newId), { 
-                            id: newId, 
-                            id_penghuni: state.loggedInUser.id, 
-                            isi, 
-                            status: 'Pending', 
-                            tanggal: new Date().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) 
-                        });
-                        showToast('Laporan sukses dikirim!', 'success');
-                        document.getElementById('formKirimKomplain').reset();
-                    } catch (error) {
-                        console.error(error);
-                        showToast('Gagal mengirim laporan', 'error');
-                    }
+                    runLocalAction(async () => {
+                        const newId = Date.now();
+                        await setDoc(getDocRef('komplain', newId), { id: newId, id_penghuni: state.loggedInUser.id, isi: document.getElementById('isiKomplain').value, status: 'Pending', tanggal: new Date().toLocaleDateString('id-ID', {day:'numeric', month:'short'}) });
+                        showToast('Laporan terkirim!'); document.getElementById('formKirimKomplain').reset();
+                    });
                 });
             }, 0);
 
             return div;
         }
 
-        window.batalKomplain = async (id) => {
-            if(confirm('Batalkan laporan komplain ini?')) {
-                try {
-                    await deleteDoc(getDocRef('komplain', id));
-                    showToast('Komplain dibatalkan.');
-                } catch (error) {
-                    console.error(error);
-                    showToast('Gagal membatalkan komplain', 'error');
-                }
-            }
-        };
+        window.batalKomplain = (id) => { if(confirm('Batal laporan?')) runLocalAction(async () => { await deleteDoc(getDocRef('komplain', id)); showToast('Dibatalkan.'); }); };
 
-        // Initialize Base Theme
         initTheme(); 
-
-        // Start Firebase Auth
         initAuth();
 
     </script>
