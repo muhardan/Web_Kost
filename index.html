@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Kost Rama Modern</title>
+    <title>Kost Kosi Modern</title>
     <!-- Tailwind CSS untuk Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Poppins -->
@@ -126,7 +126,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kost-Rama-app';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'kost-kosi-app';
 
         // ==========================================
         // 2. STATE MANAGEMENT 
@@ -296,7 +296,7 @@
                         <div class="inline-flex p-3.5 md:p-4 bg-gradient-to-tr from-primary to-indigo-400 rounded-2xl mb-4 md:mb-5 shadow-lg shadow-primary/30 transform rotate-3">
                             <i class="ph-fill ph-buildings text-4xl text-white"></i>
                         </div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight mb-1 md:mb-2">Kost Rama</h1>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight mb-1 md:mb-2">Kost Kosi</h1>
                         <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm font-medium">Sistem Manajemen Kost Cerdas</p>
                     </div>
                     
@@ -392,7 +392,7 @@
 
             sidebar.innerHTML = `
                 <div class="h-20 flex items-center px-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
-                    <div class="flex items-center gap-3 text-primary"><i class="ph-fill ph-buildings text-3xl"></i><span class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-white">Kost Rama</span></div>
+                    <div class="flex items-center gap-3 text-primary"><i class="ph-fill ph-buildings text-3xl"></i><span class="text-xl font-extrabold tracking-tight text-slate-800 dark:text-white">Kost Kosi</span></div>
                 </div>
                 <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">Menu Utama</p>${sidebarMenusHtml}
@@ -460,7 +460,7 @@
 
             // --- 3. MAIN AREA (Content) ---
             const mainArea = document.createElement('main');
-            mainArea.className = 'flex-1 flex flex-col relative overflow-hidden h-full min-w-0'; // min-w-0 penting untuk truncate flex children
+            mainArea.className = 'flex-1 flex flex-col relative overflow-hidden h-full min-w-0'; 
             
             const isDark = document.documentElement.classList.contains('dark');
             
@@ -659,7 +659,7 @@
                             </div>
                             <div class="grid grid-cols-2 gap-3 md:gap-4">
                                 <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">Harga (Rp)</label><input type="number" id="k_harga" required min="0" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white text-sm"></div>
-                                <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">Ukuran (m²)</label><input type="number" id="k_ukuran" required min="1" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white text-sm"></div>
+                                <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">Ukuran (m²)</label><input type="number" id="k_ukuran" required min="1" placeholder="Misal: 12" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white text-sm"></div>
                             </div>
                             <div><label class="block text-xs md:text-sm font-medium mb-1 dark:text-slate-300">Fasilitas (Koma)</label><textarea id="k_fasilitas" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary outline-none dark:text-white resize-none h-20 text-sm"></textarea></div>
                             <button type="submit" class="btn-animate w-full bg-primary text-white py-3.5 rounded-xl font-bold mt-2 shadow-lg shadow-primary/30">Simpan Kamar</button>
@@ -949,7 +949,7 @@
                         </form>
                     </div>
                     <!-- Riwayat (Di bawah pada mobile) -->
-                    <div class="order-2"><h4 class="font-bold text-base md:text-lg mb-3 md:mb-4 dark:text-white">Riwayat Pengumuman</h4><div class="max-h-[400px] md:max-h-[500px] overflow-y-auto custom-scrollbar pr-1 md:pr-2">${listHtml || '<p class="text-slate-500 italic text-sm">Belum ada.</p>'}</div></div>
+                    <div class="order-2"><h4 class="font-bold text-base md:text-lg mb-3 md:mb-4 dark:text-white mt-4 lg:mt-0">Riwayat Pengumuman</h4><div class="max-h-[400px] md:max-h-[500px] overflow-y-auto custom-scrollbar pr-1 md:pr-2">${listHtml || '<p class="text-slate-500 italic text-sm">Belum ada.</p>'}</div></div>
                 </div>
             `;
             setTimeout(() => {
@@ -1040,7 +1040,7 @@
             const m = prompt('Ketik angka:\n1 - Transfer BCA\n2 - Uang Tunai (Cash)');
             if(m === '1' || m === '2') runLocalAction(async () => {
                 await updateDoc(getDocRef('tagihan', id), { status_bayar: 'Menunggu Konfirmasi', metode: m === '1' ? 'Transfer BCA' : 'Cash' });
-                if(m==='1') alert('TRANSFER ke BCA: 988657896 A.N Kost Rama'); else alert('Notifikasi dikirim ke Admin.');
+                if(m==='1') alert('TRANSFER ke BCA: 988657896 A.N Kost Kosi'); else alert('Notifikasi dikirim ke Admin.');
                 showToast('Pembayaran diproses!');
             });
         };
